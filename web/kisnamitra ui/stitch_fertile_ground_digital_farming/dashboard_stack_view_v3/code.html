@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Living Archive | Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Merriweather:wght@400;700&amp;family=Noto+Serif:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#ffffff",
+                        "surface": "#fbf9f4",
+                        "surface-tint": "#904b33",
+                        "on-tertiary-container": "#fff5e7",
+                        "secondary": "#3b6934",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#b9eeab",
+                        "surface-container-low": "#f5f3ee",
+                        "surface-container": "#f0eee9",
+                        "tertiary": "#715400",
+                        "on-secondary-fixed-variant": "#23501e",
+                        "on-surface-variant": "#54433e",
+                        "on-surface": "#1b1c19",
+                        "inverse-surface": "#30312e",
+                        "primary-fixed": "#ffdbcf",
+                        "secondary-fixed-dim": "#a1d494",
+                        "primary": "#88452d",
+                        "inverse-primary": "#ffb59c",
+                        "secondary-fixed": "#bcf0ae",
+                        "surface-dim": "#dbdad5",
+                        "surface-bright": "#fbf9f4",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-background": "#1b1c19",
+                        "on-tertiary-fixed": "#251a00",
+                        "primary-container": "#a65d43",
+                        "on-primary-container": "#fff4f0",
+                        "surface-container-high": "#eae8e3",
+                        "background": "#fbf9f4",
+                        "tertiary-fixed-dim": "#f9bd14",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdf9d",
+                        "outline": "#86736d",
+                        "on-primary-fixed-variant": "#73351e",
+                        "on-primary-fixed": "#390c00",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f2f1ec",
+                        "surface-variant": "#e4e2dd",
+                        "surface-container-highest": "#e4e2dd",
+                        "outline-variant": "#d9c2ba",
+                        "on-secondary-fixed": "#002201",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#8f6b00",
+                        "primary-fixed-dim": "#ffb59c",
+                        "on-tertiary-fixed-variant": "#5b4300",
+                        "on-secondary-container": "#3f6d38"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+        }
+        .card-stack-shadow {
+            box-shadow: 0 -10px 20px -5px rgba(27, 28, 25, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body min-h-screen">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full flex justify-between items-center px-8 h-20 bg-[#fbf9f4]/80 dark:bg-stone-950/80 backdrop-blur-xl z-50">
+<div class="text-2xl font-serif font-bold text-[#88452d] dark:text-[#a65d43]">
+            Kisan Mitr
+        </div>
+<nav class="hidden md:flex items-center space-x-8 font-serif text-[#1b1c19] dark:text-[#fbf9f4] tracking-tight">
+<a class="text-[#88452d] dark:text-[#a65d43] border-b-2 border-[#88452d] pb-1 font-semibold" href="#">Dashboard</a>
+<a class="text-[#1b1c19]/70 dark:text-[#fbf9f4]/70 hover:text-[#88452d] transition-colors" href="#">Sensors</a>
+<a class="text-[#1b1c19]/70 dark:text-[#fbf9f4]/70 hover:text-[#88452d] transition-colors" href="#">Archived Maps</a>
+<a class="text-[#1b1c19]/70 dark:text-[#fbf9f4]/70 hover:text-[#88452d] transition-colors" href="#">Reports</a>
+</nav>
+<div class="flex items-center space-x-6">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-[#f5f3ee] dark:hover:bg-stone-800 p-2 rounded-lg transition-all" data-icon="notifications">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-[#f5f3ee] dark:hover:bg-stone-800 p-2 rounded-lg transition-all" data-icon="settings">settings</button>
+<img alt="User profile avatar" class="w-10 h-10 rounded-full border-2 border-primary/20" data-alt="close-up portrait of a thoughtful man with a short beard against a soft natural blurred outdoor background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCczzPgD51BLIy3_CuEQWP2TlK-QGt7v_fAwgMe49G8_2DqoyydFmbHUB3vZlYpc0rwEG_jcBbFrpHiVSXgEgcpF3bWA6fV0WRAuK5TFn3JZccpxC8AmXD6nmGW53KxgDciJG6NkSbdPtNWHjPXNzuPzaxywz6s_68YDoAOQ7gUirk1NiPhfltnofFIuBsSQ9qLBTZFKa7FkGdcMiKKOktkGM_Te3KZ4n3sS0spFgGBbyiagoCnWOfK4i6yWcQPZKgK0L7HXZC3AhI"/>
+</div>
+</header>
+<!-- SideNavBar (Suppressed for focus on Top Bar as per user intent, but present in JSON) -->
+<aside class="fixed left-0 top-0 h-full flex flex-col pt-24 pb-8 bg-[#f5f3ee] dark:bg-stone-900 w-64 hidden lg:flex">
+<div class="px-6 mb-8">
+<div class="font-serif text-lg font-bold text-[#1b1c19] dark:text-[#fbf9f4]">Fertile Ground</div>
+<div class="text-xs text-on-surface-variant opacity-60">Sector 04 - Northern Plot</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="bg-[#b9eeab] dark:bg-[#3f6d38] text-[#3f6d38] dark:text-[#b9eeab] rounded-r-full font-bold ml-0 pr-4 py-3 flex items-center px-6" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span> Overview
+            </a>
+<a class="text-[#1b1c19]/60 dark:text-[#fbf9f4]/60 hover:translate-x-1 py-3 px-6 transition-transform flex items-center hover:text-[#3f6d38] dark:hover:text-[#b9eeab]" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="potted_plant">potted_plant</span> Soil Health
+            </a>
+<a class="text-[#1b1c19]/60 dark:text-[#fbf9f4]/60 hover:translate-x-1 py-3 px-6 transition-transform flex items-center hover:text-[#3f6d38] dark:hover:text-[#b9eeab]" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="psychology_alt">psychology_alt</span> Crop Cycles
+            </a>
+<a class="text-[#1b1c19]/60 dark:text-[#fbf9f4]/60 hover:translate-x-1 py-3 px-6 transition-transform flex items-center hover:text-[#3f6d38] dark:hover:text-[#b9eeab]" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="cloud">cloud</span> Weather
+            </a>
+<a class="text-[#1b1c19]/60 dark:text-[#fbf9f4]/60 hover:translate-x-1 py-3 px-6 transition-transform flex items-center hover:text-[#3f6d38] dark:hover:text-[#b9eeab]" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="history_edu">history_edu</span> History
+            </a>
+</nav>
+<div class="px-6 mt-auto">
+<button class="w-full py-3 bg-primary text-on-primary rounded-lg font-semibold flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span>Add New Sensor</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="lg:ml-64 pt-20 min-h-screen relative overflow-hidden flex flex-col items-center">
+<!-- Soil Header Hero -->
+<section class="w-full px-8 py-12 flex flex-col lg:flex-row items-end gap-8 relative z-10">
+<div class="lg:w-2/3">
+<h1 class="font-headline text-6xl md:text-8xl font-extrabold text-on-surface leading-none -ml-1 mb-4 select-none">
+                    Field <span class="text-primary italic">Pulse</span>
+</h1>
+<p class="text-lg text-on-surface-variant max-w-xl font-body leading-relaxed">
+                    Real-time monitoring of the northern orchard's microclimate. Dynamic telemetry captured from the living substrate.
+                </p>
+</div>
+<div class="hidden lg:block w-1/3 bg-surface-container-low h-32 rounded-xl overflow-hidden relative translate-y-8">
+<div class="absolute inset-0 bg-gradient-to-tr from-secondary/10 to-transparent"></div>
+<div class="p-4">
+<span class="text-xs uppercase tracking-widest text-on-surface-variant font-bold opacity-40">System Status</span>
+<div class="flex items-center space-x-2 mt-2">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-sm font-semibold text-secondary">All nodes active</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Vertical Card Stack Interaction Container -->
+<section class="flex-1 w-full max-w-5xl px-8 pb-20 flex flex-col relative">
+<!-- Floating Arrows (Navigation Controls) -->
+<div class="absolute right-12 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-40">
+<button class="w-12 h-12 rounded-full bg-surface/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-on-surface shadow-xl hover:bg-surface transition-all">
+<span class="material-symbols-outlined" data-icon="keyboard_arrow_up">keyboard_arrow_up</span>
+</button>
+<button class="w-12 h-12 rounded-full bg-surface/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-on-surface shadow-xl hover:bg-surface transition-all">
+<span class="material-symbols-outlined" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+</button>
+</div>
+<!-- The Stack -->
+<div class="relative flex flex-col w-full h-[600px]">
+<!-- Card 1: Primary (Active) -->
+<div class="absolute top-0 left-0 w-full z-30 transform transition-all duration-500">
+<div class="bg-surface-container-lowest rounded-3xl p-10 shadow-2xl border border-outline-variant/10 min-h-[500px] flex flex-col lg:flex-row gap-10">
+<div class="lg:w-1/2 flex flex-col justify-between">
+<div>
+<div class="inline-flex items-center px-3 py-1 rounded-full bg-error-container text-on-error-container text-xs font-bold uppercase tracking-wider mb-6">
+<span class="material-symbols-outlined text-sm mr-1" data-icon="warning" data-weight="fill">warning</span> Priority Alert
+                                </div>
+<h2 class="font-headline text-5xl font-bold text-on-surface mb-4">High Heat Alert</h2>
+<p class="text-xl text-on-surface-variant leading-relaxed">
+                                    Soil temperatures in the upper loam have exceeded thresholds. Activation of the sub-canopy irrigation system is recommended.
+                                </p>
+</div>
+<div class="mt-8 flex items-baseline gap-4">
+<span class="text-8xl font-extrabold text-primary">28°C</span>
+<span class="text-on-surface-variant text-lg">Ambient Target: 22°C</span>
+</div>
+</div>
+<div class="lg:w-1/2 bg-surface-container-high rounded-2xl relative overflow-hidden min-h-[250px]">
+<img class="absolute inset-0 w-full h-full object-cover opacity-60" data-alt="dramatic close-up of dry cracked earth texture with warm golden sunset light highlighting the rugged terrain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXm0XAOICKEH9bmbK4AOcJG0MstRJU1UnZx3pYUs7pcVyD865qyTbWmI0wsqSA6vj9ld9d7LB69WgGey_gYRBPTvC80-gLpPARt20tZavWmbq8cx19BlIC_bXOhv4YsG81s9dr-8fWLzIRVMj9RBXOntyft5ZB2C0jcrhP2xaFSkE3cshMnHgW14aSQ2MDg938YfWp0DfB_WDuFAh1Uxd5RgLpjrgcpzjTO5fgDtKB3LJQCw7SycUek6JFqazbtVhPRt8rF0SuAd4"/>
+<div class="absolute inset-0 p-8 flex flex-col justify-end bg-gradient-to-t from-surface-container-high via-transparent to-transparent">
+<div class="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-white/20">
+<div class="text-xs uppercase font-bold text-on-surface-variant mb-1">Sensor Node 08</div>
+<div class="text-sm font-medium">Deep Loam - Sector 04</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Lower (Visible Edge) -->
+<div class="absolute top-16 left-0 w-full z-20 transform transition-all duration-500 translate-y-4 scale-[0.98]">
+<div class="bg-surface-container-low rounded-3xl p-10 card-stack-shadow border border-outline-variant/5 min-h-[500px]">
+<div class="flex justify-between items-center opacity-40">
+<h3 class="font-headline text-2xl font-bold">Soil Moisture Analysis</h3>
+<span class="material-symbols-outlined" data-icon="water_drop">water_drop</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Lower (Visible Edge) -->
+<div class="absolute top-32 left-0 w-full z-10 transform transition-all duration-500 translate-y-8 scale-[0.96]">
+<div class="bg-surface-container-high rounded-3xl p-10 card-stack-shadow border border-outline-variant/5 min-h-[500px]">
+<div class="flex justify-between items-center opacity-20">
+<h3 class="font-headline text-2xl font-bold">Atmospheric Pressure</h3>
+<span class="material-symbols-outlined" data-icon="compress">compress</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Secondary Bento Grid for Stats -->
+<section class="w-full max-w-7xl px-8 py-12 grid grid-cols-1 md:grid-cols-4 gap-6">
+<div class="md:col-span-2 bg-surface-container-low rounded-2xl p-8 flex flex-col justify-between group hover:bg-secondary-container transition-colors duration-300">
+<span class="material-symbols-outlined text-4xl text-secondary mb-4" data-icon="psychology_alt">psychology_alt</span>
+<div>
+<h4 class="text-xl font-bold mb-2">Predictive Harvest</h4>
+<p class="text-sm text-on-surface-variant group-hover:text-on-secondary-container transition-colors">Yield estimates for Northern Plot show a 12% increase based on recent nitrogen uptake patterns.</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/10 rounded-2xl p-8 flex flex-col justify-center items-center text-center">
+<div class="text-4xl font-extrabold text-primary mb-1">68%</div>
+<div class="text-xs uppercase tracking-widest font-bold text-on-surface-variant opacity-60">Avg Humidity</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant/10 rounded-2xl p-8 flex flex-col justify-center items-center text-center">
+<div class="text-4xl font-extrabold text-secondary mb-1">Low</div>
+<div class="text-xs uppercase tracking-widest font-bold text-on-surface-variant opacity-60">Pest Risk</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full flex justify-between items-center border-t-[0.5px] border-[#1b1c19]/10 bg-[#fbf9f4] dark:bg-stone-950 py-12 px-8">
+<div class="font-sans text-xs uppercase tracking-widest text-[#1b1c19]/40 dark:text-[#fbf9f4]/40">
+            © 2024 The Living Archive. Grounded in Data.
+        </div>
+<div class="flex space-x-8">
+<a class="font-sans text-xs uppercase tracking-widest text-[#1b1c19]/40 dark:text-[#fbf9f4]/40 hover:text-[#1b1c19] transition-opacity" href="#">Privacy Policy</a>
+<a class="font-sans text-xs uppercase tracking-widest text-[#1b1c19]/40 dark:text-[#fbf9f4]/40 hover:text-[#1b1c19] transition-opacity" href="#">Technical Support</a>
+<a class="font-sans text-xs uppercase tracking-widest text-[#1b1c19]/40 dark:text-[#fbf9f4]/40 hover:text-[#1b1c19] transition-opacity" href="#">API Documentation</a>
+</div>
+</footer>
+</body></html>

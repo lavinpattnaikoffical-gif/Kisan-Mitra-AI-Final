@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Living Archive | Marketplace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Merriweather:ital,wght@0,700;1,700&amp;family=Noto+Serif:ital,wght@0,700;1,700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#3f6d38",
+                        "on-error-container": "#93000a",
+                        "primary": "#88452d",
+                        "secondary-fixed": "#bcf0ae",
+                        "tertiary-fixed-dim": "#f9bd14",
+                        "surface-container-high": "#eae8e3",
+                        "surface-container-low": "#f5f3ee",
+                        "on-secondary": "#ffffff",
+                        "surface": "#fbf9f4",
+                        "outline": "#86736d",
+                        "on-secondary-fixed": "#002201",
+                        "on-primary-fixed": "#390c00",
+                        "surface-tint": "#904b33",
+                        "on-surface-variant": "#54433e",
+                        "error": "#ba1a1a",
+                        "on-tertiary-container": "#fff5e7",
+                        "primary-fixed": "#ffdbcf",
+                        "outline-variant": "#d9c2ba",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#3b6934",
+                        "secondary-container": "#b9eeab",
+                        "background": "#fbf9f4",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-background": "#1b1c19",
+                        "surface-container-highest": "#e4e2dd",
+                        "on-surface": "#1b1c19",
+                        "surface-bright": "#fbf9f4",
+                        "surface-variant": "#e4e2dd",
+                        "surface-container": "#f0eee9",
+                        "surface-dim": "#dbdad5",
+                        "inverse-on-surface": "#f2f1ec",
+                        "inverse-primary": "#ffb59c",
+                        "tertiary": "#715400",
+                        "secondary-fixed-dim": "#a1d494",
+                        "tertiary-container": "#8f6b00",
+                        "on-primary-fixed-variant": "#73351e",
+                        "inverse-surface": "#30312e",
+                        "on-secondary-fixed-variant": "#23501e",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#a65d43",
+                        "tertiary-fixed": "#ffdf9d",
+                        "on-tertiary-fixed-variant": "#5b4300",
+                        "on-tertiary-fixed": "#251a00",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#fff4f0",
+                        "primary-fixed-dim": "#ffb59c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Noto Serif"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .soil-header-overlap {
+            margin-top: -2rem;
+        }
+        .glass-blur {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopAppBar -->
+<header class="bg-[#fbf9f4] dark:bg-[#1b1c19] flex justify-between items-center w-full px-6 py-4 fixed top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container-highest">
+<img alt="User profile" data-alt="close-up portrait of a middle-aged farmer with a warm smile and weather-beaten skin, soft natural outdoor lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0tEBl_hfo29gbjxkjtGG9lXqexNqpsGRaU-LcSkgD_RccZU-4-LHrIiPgLJTLgjeNleEtiJ_lfDKB5zSiPRO9xQIFPQQ3_zkvuJ0BO4k61lBz3qx0zarNig-1YWCaYmnzl3Ue9gPyEJ74qJimyCF2VsFmVuK67aXNHQT8hrw-ieCZFQronNsE43dwIKHySUB8L1XqZHbzplJXGk9AdHxR4PAc2i3kR4ZM1mMbIA-ip0A38usiGZvF7d7kUMs1fY-bRoECIc-6itk"/>
+</div>
+<h1 class="font-serif italic text-2xl font-bold tracking-tight text-[#88452d] dark:text-[#a65d43]">Kisan Mitr</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#f5f3ee] dark:hover:bg-stone-800 transition-colors duration-300">
+<span class="material-symbols-outlined text-stone-500">settings</span>
+</button>
+</header>
+<main class="pt-24 pb-40 px-6 max-w-7xl mx-auto">
+<!-- Hero Section: The "Soil" Header -->
+<section class="mb-12 relative">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+<div class="md:col-span-8 relative z-10">
+<h2 class="font-headline text-5xl md:text-7xl text-primary leading-[1.1] mb-6">
+                        Crops rooted in <br/><span class="italic font-serif">Deep History.</span>
+</h2>
+</div>
+<div class="md:col-span-4 soil-header-overlap">
+<div class="aspect-[4/5] rounded-xl overflow-hidden bg-surface-container-low shadow-xl">
+<img alt="Organic farming" class="w-full h-full object-cover" data-alt="close-up of healthy green vegetable sprouts growing from rich dark moist soil in a sun-drenched organic field" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCr-lEJEaVO6EZp44NbG_jDwif2ExO7sdtul15jrxNYYn1WcyLr6UVs8oxgfxEQNGHsRL2J7ckzu0Oe9C5dB8dmkilOeqrsVRAUlFIGauRBdg9Mq5Y5jmoHPpxjUiEo0EKz5hV4MjT6I1aimwRFr9QuZ8TKuvF5hWN_Tylcmx1Rn00IT2wFrlt7ZNPXem7VNlkdWuHAWAuLQeP3UeWVzlavz2MhzcaVnX2dcGwUuQDKujB-lkir3qgyQPyBI9UEEUbxZF0cwuO7c_w"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Digital Crop Passport Bento -->
+<section class="mb-16">
+<div class="flex items-baseline justify-between mb-8">
+<h3 class="font-headline text-3xl text-on-surface">Digital Crop Passport</h3>
+<span class="font-label text-sm uppercase tracking-widest text-outline">Verified Archive</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- QR Identification Card -->
+<div class="md:col-span-1 bg-surface-container-lowest p-8 rounded-xl flex flex-col items-center justify-center text-center group transition-all duration-300 hover:shadow-lg">
+<div class="w-32 h-32 mb-6 p-4 bg-white rounded-lg shadow-inner flex items-center justify-center">
+<span class="material-symbols-outlined text-6xl text-primary" style="font-variation-settings: 'wght' 200;">qr_code_2</span>
+</div>
+<h4 class="font-headline text-xl mb-2 text-on-surface">Certificate of Growth</h4>
+<p class="text-on-surface-variant text-sm px-4">Instant verification of lineage, batch, and origin via encrypted ledger.</p>
+</div>
+<!-- Soil Health & Pesticide History -->
+<div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+<div class="bg-secondary-container/30 p-8 rounded-xl flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined text-on-secondary-container mb-4">grass</span>
+<h4 class="font-headline text-xl text-on-secondary-container mb-2">Soil Vitality</h4>
+</div>
+<div>
+<div class="flex justify-between items-end mb-2">
+<span class="text-4xl font-bold text-on-secondary-container">94%</span>
+<span class="text-xs uppercase font-bold text-on-secondary-container">Health Index</span>
+</div>
+<div class="w-full bg-on-secondary-container/10 h-2 rounded-full overflow-hidden">
+<div class="bg-on-secondary-container h-full w-[94%]"></div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-8 rounded-xl flex flex-col justify-between border border-outline-variant/15">
+<div>
+<span class="material-symbols-outlined text-primary mb-4">biotech</span>
+<h4 class="font-headline text-xl text-on-surface mb-2">Pesticide Log</h4>
+</div>
+<ul class="space-y-3">
+<li class="flex items-center gap-3 text-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-on-surface-variant">Zero Synthetic Pesticides</span>
+</li>
+<li class="flex items-center gap-3 text-sm">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="text-on-surface-variant">100% Organic Compost</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- Marketplace Grid -->
+<section class="mb-20">
+<div class="flex items-center justify-between mb-8">
+<h3 class="font-headline text-3xl text-on-surface">Current Harvest</h3>
+<div class="flex gap-4">
+<button class="px-5 py-2 rounded-full bg-surface-container-high font-label text-sm font-semibold">Filter</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-high font-label text-sm font-semibold">Sort By</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Listing: Wheat -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden group transition-all">
+<div class="aspect-square overflow-hidden bg-surface-container-highest">
+<img alt="Wheat Harvest" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="overhead high-quality 1:1 shot of golden wheat grains in a rustic wooden bowl with sharp texture and warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPLMBQvcaMI7rp6CXz4lnMnLqsgUwFYRc0OcwjP9EVKm4ziGj9xhXJOBLS__FtQfILKTl74PqaaGdRwflve3K8g0GttrSZCSVkPpLlpc1LSxt50yD3Js-YoGHuX6gHIVp6owWd_535nr3kg-HjKWftl23zfIwu63EStmqKNYGo4BLTab3YFExL7beUOY28HsEhRAY04o_bDpKfkhEAocit_plgx_KC2XvZvi3k7S2CgPD1YgPZcC7AXjA7db1bCxzPybi0Rthz2k0"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-headline text-xl">Golden Heirloom Wheat</h4>
+<span class="text-primary font-bold">$4.20<span class="text-xs font-normal text-outline">/kg</span></span>
+</div>
+<p class="text-on-surface-variant text-sm mb-4 line-clamp-2">High-protein ancient grain variety harvested from the Northern Uplands.</p>
+<button class="w-full py-3 bg-surface-container-high text-on-surface rounded-lg font-label text-sm font-bold uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-colors">Add to Cart</button>
+</div>
+</div>
+<!-- Listing: Rice -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden group transition-all">
+<div class="aspect-square overflow-hidden bg-surface-container-highest">
+<img alt="Rice Grains" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="1:1 macro shot of polished long-grain jasmine rice, pristine white color, clean minimalist aesthetic with soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMeBHuQAU25il4Amqgsv4dSX0_4j-vceTYgGgc-qnvQSer_cK5Qc3TdScR4pOUhKYw7D62dwhFQdmJHNB8nFU4jaIhQjFPYWJwxKPXRBOM1cat55d9I2el5R1g_fs4Z9VjKn60z0WIYLgHiQQASV3zt3WrZd3Opu1sXJ4jDrCqLw24etzUxcDE8H0TT2oaQUzdYfWz_DjS4BqIsr8W5rimg9d8gnmFSno5nMc-JQ91ykNhNoXDoTQC-ZcyimVt28REVVzk9g7FCgs"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-headline text-xl">Long Grain Basmati</h4>
+<span class="text-primary font-bold">$3.80<span class="text-xs font-normal text-outline">/kg</span></span>
+</div>
+<p class="text-on-surface-variant text-sm mb-4 line-clamp-2">Aromatic aged basmati, rain-fed and hand-winnowed for purity.</p>
+<button class="w-full py-3 bg-surface-container-high text-on-surface rounded-lg font-label text-sm font-bold uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-colors">Add to Cart</button>
+</div>
+</div>
+<!-- Listing: Tomatoes -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden group transition-all">
+<div class="aspect-square overflow-hidden bg-surface-container-highest">
+<img alt="Tomatoes" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" data-alt="vibrant red vine-ripened tomatoes in a 1:1 square crop with water droplets, morning dew lighting, crisp and fresh look" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAp7SDrUK7U43pOY6cedOXXJztZRUid5vshGLZAtWdYl9Rd6xjHXVZf21oMwD8bExU278-lODUEbgApLzZ2Th3v4KBB4wJF4ptpNTObLJLWT4KzZvlPSd05Ml8zdZD6xEK2v_ymSfTLwhP9w7XZbkhlqUcq2D1JYOvKPVvpN9EleIicOql67N-1zsgLlfCJgyJDFpvhWySDoE0zO5h-FB5Wn32F2FtAihy-QUDsW7Annuh6W6LEFTocmu47reECmEAOuRut-yhcfY4"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-headline text-xl">Ruby Vine Tomatoes</h4>
+<span class="text-primary font-bold">$2.50<span class="text-xs font-normal text-outline">/kg</span></span>
+</div>
+<p class="text-on-surface-variant text-sm mb-4 line-clamp-2">Rich in lycopene, these sun-ripened gems are picked daily at peak flavor.</p>
+<button class="w-full py-3 bg-surface-container-high text-on-surface rounded-lg font-label text-sm font-bold uppercase tracking-widest hover:bg-primary hover:text-on-primary transition-colors">Add to Cart</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Cart Slide-to-Buy Drawer -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-lg z-50">
+<div class="bg-on-surface text-surface px-6 py-4 rounded-2xl shadow-2xl flex items-center justify-between glass-blur bg-opacity-95">
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="absolute -top-2 -right-2 bg-primary text-on-primary text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold">3</span>
+</div>
+<div>
+<div class="text-xs text-surface/60 uppercase font-bold tracking-widest">Cart Total</div>
+<div class="text-xl font-headline">$14.70</div>
+</div>
+</div>
+<!-- Gesture Slider Mockup -->
+<div class="relative h-12 w-48 bg-surface/10 rounded-full flex items-center px-1 overflow-hidden group cursor-pointer border border-surface/20">
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<span class="text-[10px] uppercase font-bold tracking-tighter opacity-40">Slide to buy</span>
+</div>
+<div class="h-10 w-10 bg-primary rounded-full flex items-center justify-center shadow-lg transform translate-x-0 transition-transform group-hover:translate-x-4">
+<span class="material-symbols-outlined text-on-primary text-sm">chevron_right</span>
+</div>
+</div>
+</div>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-[#fbf9f4]/80 dark:bg-[#1b1c19]/80 backdrop-blur-xl shadow-[0_-4px_24px_rgba(27,28,25,0.04)] rounded-t-[2rem]">
+<a class="text-stone-500 dark:text-stone-400 flex flex-col items-center py-1.5 transition-transform scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined mb-1">grid_view</span>
+<span class="font-sans text-[11px] font-semibold uppercase tracking-wider">Dashboard</span>
+</a>
+<a class="text-stone-500 dark:text-stone-400 flex flex-col items-center py-1.5 transition-transform scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined mb-1">psychology</span>
+<span class="font-sans text-[11px] font-semibold uppercase tracking-wider">Mitr AI</span>
+</a>
+<a class="bg-[#b9eeab] text-[#3f6d38] dark:bg-[#3f6d38] dark:text-[#b9eeab] rounded-full px-5 py-1.5 flex flex-col items-center transition-all duration-500" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">local_mall</span>
+<span class="font-sans text-[11px] font-semibold uppercase tracking-wider">Market</span>
+</a>
+<a class="text-stone-500 dark:text-stone-400 flex flex-col items-center py-1.5 transition-transform scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-sans text-[11px] font-semibold uppercase tracking-wider">Profile</span>
+</a>
+</nav>
+</body></html>
