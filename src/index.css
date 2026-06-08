@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Smooth theme transitions */
+:root {
+  --transition-theme: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+html {
+  transition: var(--transition-theme);
+}
+
+/* Custom animation utilities */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@utility animate-spin-slow {
+  animation: spin-slow 6s linear infinite;
+}
+
+@utility animate-bounce-slow {
+  animation: bounce-slow 2s ease-in-out infinite;
+}
+
+/* Transition duration tokens used across the app */
+@utility duration-fast {
+  transition-duration: 150ms;
+}
+
+@utility duration-normal {
+  transition-duration: 300ms;
+}
+
+/* Rounded 2.5xl utility used in chat bubbles */
+@utility rounded-2\.5xl {
+  border-radius: 1.25rem;
+}
+
+/* Safe area padding for bottom nav on iOS */
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Notification overlay blur */
+@utility backdrop-blur-notification {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+
+/* Scrollbar styling for notification panel and chat */
+.notification-scroll::-webkit-scrollbar,
+.chat-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.notification-scroll::-webkit-scrollbar-thumb,
+.chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+}
+
+.dark .notification-scroll::-webkit-scrollbar-thumb,
+.dark .chat-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
