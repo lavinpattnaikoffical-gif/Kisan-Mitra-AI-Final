@@ -22,12 +22,13 @@ import {
   AlertTriangle,
   ChevronRight
 } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 
 import { UserProfile, MetricItem, InboxAlert, MarketProduct, FarmActivityLog, ScanRecord, ChatMessage } from "./types";
 import { TRANSLATIONS, LanguageCode } from "./translations";
 
 // Components
+import LivingSurface from "./components/LivingSurface";
 import LoginOnboarding from "./components/LoginOnboarding";
 import Dashboard from "./components/Dashboard";
 import Detect from "./components/Detect";
@@ -65,6 +66,11 @@ export default function App() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [liveLocation, setLiveLocation] = useState<{district: string; state: string} | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
+
+  // Scroll tracking for atmospheric background
+  const mainScrollRef = React.useRef<HTMLElement>(null);
+  const { scrollY } = useScroll({ container: mainScrollRef });
+  const atmosphereOpacity = useTransform(scrollY, [0, 300], [0, 0.4]);
 
   // Core synchronized agricultural database states
   const [metrics, setMetrics] = useState<MetricItem[]>([
@@ -177,8 +183,8 @@ export default function App() {
       id: `welcome-${Date.now()}`,
       sender: "bot",
       text: newProfile.language === "Hindi" 
-        ? `नमस्ते राजेश जी! किसानमित्र AI में आपका स्वागत है। आपके ${newProfile.cropType} के खेत (क्षेत्र: ${newProfile.farmSize} ${newProfile.farmSizeUnit}) के लिए मैंने सभी कृषि मानकों को अनुकूलित कर दिया है। मिट्टी की नमी की जांच के लिए आप 'मुख्य पेज' और फसल सुरक्षा समीक्षा के लिए 'बीमारी स्कैनर' का उपयोग कर सकते हैं।`
-        : `Namaste Rajesh! Welcome to KisanMitr AI. I have successfully customized your farmer desk matching your ${newProfile.cropType} cultivation (${newProfile.farmSize} ${newProfile.farmSizeUnit}). Reach out if you need soil advisor feedback!`,
+        ? `नमस्ते राजेश जी! RAMU में आपका स्वागत है। आपके ${newProfile.cropType} के खेत (क्षेत्र: ${newProfile.farmSize} ${newProfile.farmSizeUnit}) के लिए मैंने सभी कृषि मानकों को अनुकूलित कर दिया है। मिट्टी की नमी की जांच के लिए आप 'मुख्य पेज' और फसल सुरक्षा समीक्षा के लिए 'बीमारी स्कैनर' का उपयोग कर सकते हैं।`
+        : `Namaste Rajesh! Welcome to RAMU Agricultural OS. I have successfully customized your command center matching your ${newProfile.cropType} cultivation (${newProfile.farmSize} ${newProfile.farmSizeUnit}). Reach out if you need intelligence or action recommendations!`,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     };
     setChatHistory([welcomeMsg]);
@@ -237,6 +243,30 @@ export default function App() {
     setChatHistory((prev) => [...prev, msg]);
   };
 
+  const handleAskRamuContext = (contextStr: string) => {
+    // Add user message with context
+    const userMsg: ChatMessage = {
+      id: `usr-${Date.now()}`,
+      sender: "user",
+      text: contextStr,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    };
+    handleAddChatMessage(userMsg);
+    
+    // Add RAMU response simulating intelligent context parsing
+    setTimeout(() => {
+      const ramuMsg: ChatMessage = {
+        id: `bot-${Date.now()}`,
+        sender: "bot",
+        text: "I analyzed the cotton leaf you captured today at " + userMsg.timestamp + " in " + profile?.district + ". The most likely diagnosis is Early Leaf Spot (91% confidence). Based on the upcoming rain forecast, I strongly recommend a preventive biological spray. Would you like me to add that to your Urgent Priorities?",
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      };
+      handleAddChatMessage(ramuMsg);
+    }, 800);
+    
+    setCurrentTab("ai");
+  };
+
   const handleDismissAlert = (id: string) => {
     setAlerts((prev) => prev.filter((a) => a.id !== id));
   };
@@ -255,125 +285,150 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F6F4F0] dark:bg-[#0F0F10] text-[#1C1C1E] dark:text-[#F5F5F7] font-sans flex flex-col transition-colors duration-normal select-none">
+    <div className="min-h-screen bg-surface-base text-content-primary font-sans flex flex-col transition-colors duration-normal select-none relative">
+      {/* Scroll-based atmospheric depth layer */}
+      <motion.div 
+        className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-b from-transparent to-black/10 dark:to-white/5"
+        style={{ opacity: atmosphereOpacity }}
+      />
       
-      {/* 🧭 Header Desk bar with quick profile information */}
-      <header className="sticky top-0 bg-white/80 dark:bg-[#0F0F10]/80 backdrop-blur-md border-b border-[#D4CFC7]/50 dark:border-white/10 h-16 px-4 sm:px-6 flex items-center justify-between z-40 select-none">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-[#2F7D4E] dark:text-[#4ADE80]">
-            <Sprout size={24} className="animate-spin-slow text-[#2F7D4E]" />
-            <span className="font-extrabold tracking-tight font-display text-base">{t.appName}</span>
+      {/* 🧭 Premium Header */}
+      <header className="sticky top-0 bg-surface-glass backdrop-blur-notification border-b border-border-subtle h-16 px-6 flex items-center justify-between z-40 select-none">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2.5 text-content-primary group cursor-pointer">
+            <motion.div whileHover={{ scale: 1.05, rotate: -5 }} whileTap={{ scale: 0.95 }} transition={{ type: "spring", stiffness: 400, damping: 10 }}>
+              <Sprout size={28} className="text-signal-success drop-shadow-sm" strokeWidth={2} />
+            </motion.div>
+            <span className="font-bold tracking-tight text-h4">{t.appName}</span>
           </div>
 
-          <span className="h-4 border-l border-[#D4CFC7] dark:border-white/10 hidden sm:inline" />
+          <span className="h-4 border-l border-border-subtle hidden sm:inline" />
 
           {/* District + live location */}
-          <div className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-[#5A5A5F] dark:text-[#A1A1A6]">
-            <MapPin size={12} className="text-[#2F7D4E] dark:text-[#4ADE80]" />
-            <span>{liveLocation ? `${liveLocation.district}, ${liveLocation.state}` : `${profile.district} District Panel`}</span>
+          <div className="hidden sm:flex items-center gap-2 text-body-sm font-medium text-content-secondary">
+            <MapPin size={14} className="text-content-muted" />
+            <span>{liveLocation ? `${liveLocation.district}, ${liveLocation.state}` : `${profile.district} District`}</span>
             {locationLoading ? (
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-signal-warning animate-pulse" />
             ) : (
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-signal-success animate-pulse" />
             )}
           </div>
         </div>
 
         {/* Dynamic header menus: Theme switcher, notifications indicator, profiles */}
-        <div className="flex items-center gap-3 select-none">
+        <div className="flex items-center gap-4 select-none">
           {/* Quick Tab indicators inside header */}
-          <span className="text-xs font-extrabold text-[#5A5A5F] dark:text-[#A1A1A6] mr-1 hidden md:inline">
-            🚜 {profile.name} ({profile.cropType} Cultivator)
+          <span className="text-body-sm font-medium text-content-secondary mr-2 hidden md:inline">
+            🚜 {profile.name} ({profile.cropType})
           </span>
 
           {/* Theme custom Toggle Button */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             id="theme-toggle-btn"
             onClick={() => setDarkMode(!darkMode)}
-            className="w-10 h-10 rounded-xl bg-[#EDE8E0] hover:bg-[#D4CFC7] dark:bg-[#1C1C1E] dark:hover:bg-[#2C2C2E] flex items-center justify-center transition-all cursor-pointer focus:outline-none"
+            className="w-10 h-10 rounded-xl bg-surface-elevated hover:bg-border-subtle flex items-center justify-center transition-colors cursor-pointer focus:outline-none text-content-primary"
             aria-label="Toggle dark mode theme"
           >
-            {darkMode ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} className="text-slate-700" />}
-          </button>
+            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+          </motion.button>
 
           {/* Active Notifications Indicator popup button */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             id="notifications-indicator-btn"
             onClick={() => setShowNotifications(!showNotifications)}
-            className="w-10 h-10 rounded-xl bg-[#EDE8E0] hover:bg-[#D4CFC7] dark:bg-[#1C1C1E] dark:hover:bg-[#2C2C2E] flex items-center justify-center transition-all cursor-pointer relative focus:outline-none"
+            className="w-10 h-10 rounded-xl bg-surface-elevated hover:bg-border-subtle flex items-center justify-center transition-colors cursor-pointer relative focus:outline-none text-content-primary"
             aria-label="Open notifications panel"
           >
             <Bell size={18} />
             {alerts.length > 0 && (
-              <span className="absolute top-2 right-2.5 bg-rose-600 w-2 h-2 rounded-full animate-ping" />
+              <span className="absolute top-2.5 right-2.5 bg-signal-critical w-2 h-2 rounded-full animate-pulse" />
             )}
-          </button>
+          </motion.button>
 
           {/* Quick Settings Icon on mobile devices */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             id="mobile-settings-btn"
             onClick={() => {
               setCurrentTab("settings");
               stopTTS();
             }}
-            className={`lg:hidden w-10 h-10 rounded-xl bg-[#EDE8E0] hover:bg-[#D4CFC7] dark:bg-[#1C1C1E] dark:hover:bg-[#2C2C2E] flex items-center justify-center transition-all cursor-pointer focus:outline-none ${
-              currentTab === "settings" ? "text-[#2F7D4E] dark:text-[#4ADE80]" : ""
+            className={`lg:hidden w-10 h-10 rounded-xl bg-surface-elevated hover:bg-border-subtle flex items-center justify-center transition-colors cursor-pointer focus:outline-none text-content-primary ${
+              currentTab === "settings" ? "bg-border-strong" : ""
             }`}
             aria-label="Open settings panel"
           >
             <SettingsIcon size={18} />
-          </button>
+          </motion.button>
         </div>
       </header>
 
       {/* Main Panel Core Frame */}
-      <div className="flex-1 flex w-full max-w-7xl mx-auto overflow-hidden relative">
+      <div className="flex-1 flex w-full overflow-hidden relative">
         
-        {/* Module Sidebar (Desktop) - 250px wide */}
-        <nav className="w-64 border-r border-[#D4CFC7]/50 dark:border-white/10 hidden lg:flex flex-col justify-between py-6 px-4 bg-white/40 dark:bg-black/10 select-none">
-          <div className="space-y-1">
-            {[
-              { id: "dashboard", label: t.dashboard, icon: Home },
-              { id: "detect", label: t.detect, icon: Camera },
-              { id: "market", label: t.market, icon: Store },
-              { id: "activity", label: t.activity, icon: ClipboardList },
-              { id: "ai", label: t.ai, icon: Bot },
-              { id: "settings", label: t.settings, icon: SettingsIcon }
-            ].map((navItem) => (
-              <button
-                key={navItem.id}
-                id={`sidebar-nav-${navItem.id}`}
-                onClick={() => {
-                  setCurrentTab(navItem.id as any);
-                  stopTTS();
-                }}
-                className={`w-full h-12 rounded-2xl px-4 flex items-center gap-3.5 text-xs font-extrabold tracking-wide uppercase transition-all duration-fast cursor-pointer ${
-                  currentTab === navItem.id
-                    ? "bg-[#2F7D4E] text-white shadow-sm shadow-[#2F7D4E]/10"
-                    : "text-[#5A5A5F] dark:text-[#A1A1A6] hover:bg-[#EDE8E0] dark:hover:bg-[#1C1C1E] hover:text-[#1C1C1E]"
-                }`}
-              >
-                <navItem.icon size={16} />
-                <span>{navItem.label}</span>
-              </button>
-            ))}
-          </div>
+        {/* Module Sidebar (Desktop) - Premium Floating Design */}
+        <nav className="w-64 hidden lg:flex flex-col py-6 px-6 select-none relative z-10">
+          <div className="material-glass rounded-3xl p-3 flex flex-col justify-between h-full shadow-sm">
+            <div className="space-y-1.5">
+              {[
+                { id: "dashboard", label: t.dashboard, icon: Home },
+                { id: "detect", label: t.detect, icon: Camera },
+                { id: "market", label: t.market, icon: Store },
+                { id: "activity", label: t.activity, icon: ClipboardList },
+                { id: "ai", label: t.ai, icon: Bot },
+                { id: "settings", label: t.settings, icon: SettingsIcon }
+              ].map((navItem) => (
+                <motion.button
+                  key={navItem.id}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  id={`sidebar-nav-${navItem.id}`}
+                  onClick={() => {
+                    setCurrentTab(navItem.id as any);
+                    stopTTS();
+                  }}
+                  className={`w-full h-11 rounded-xl px-4 flex items-center gap-3 text-body-sm font-medium transition-colors cursor-pointer ${
+                    currentTab === navItem.id
+                      ? "bg-content-primary text-surface-base shadow-md"
+                      : "text-content-secondary hover:bg-border-subtle hover:text-content-primary"
+                  }`}
+                >
+                  <navItem.icon size={18} className={currentTab === navItem.id ? "stroke-[2px]" : "stroke-[1.5px]"} />
+                  <span>{navItem.label}</span>
+                </motion.button>
+              ))}
+            </div>
 
-          {/* Logout Action button */}
-          <button
-            id="sidebar-logout-btn"
-            onClick={handleResetData}
-            className="w-full h-11 rounded-xl px-4 flex items-center gap-3 text-xs font-bold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/15 cursor-pointer"
-          >
-            <LogOut size={16} />
-            <span>Reset Setup Portfolio</span>
-          </button>
+            {/* Logout Action button */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              id="sidebar-logout-btn"
+              onClick={handleResetData}
+              className="w-full h-11 rounded-xl px-4 flex items-center gap-3 text-body-sm font-medium text-signal-critical hover:bg-signal-critical/10 cursor-pointer transition-colors duration-fast"
+            >
+              <LogOut size={18} strokeWidth={1.5} />
+              <span>Sign Out</span>
+            </motion.button>
+          </div>
         </nav>
 
 
 
         {/* Main Content Workspace viewport */}
-        <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 md:py-8 relative pb-20 select-none">
+        <main 
+          ref={mainScrollRef}
+          className={`flex-1 relative select-none z-10 ${
+          currentTab === "ai" 
+            ? "overflow-hidden pb-20 lg:pb-0" 
+            : "overflow-y-auto px-4 py-6 sm:px-6 md:py-8 pb-20"
+        }`}>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentTab}
@@ -381,6 +436,7 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
+              className={currentTab === "ai" ? "h-full" : ""}
             >
               {currentTab === "dashboard" && (
                 <Dashboard 
@@ -409,6 +465,7 @@ export default function App() {
                   onNavigateTab={setCurrentTab}
                   scans={scans}
                   onAddScan={handleAddScan}
+                  onAskRamu={handleAskRamuContext}
                 />
               )}
 
@@ -443,6 +500,7 @@ export default function App() {
                   chatHistory={chatHistory}
                   onAddChatMessage={handleAddChatMessage}
                   onTriggerIrrigation={handleTriggerIrrigation}
+                  contextEntryTab={currentTab}
                 />
               )}
 
@@ -466,32 +524,59 @@ export default function App() {
       </span>
 
       {/* Floating Bottom Menu Navigation Dock (Mobile Only) */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 dark:bg-[#1C1C1E]/95 border-t border-[#D4CFC7]/50 dark:border-white/10 h-16 flex items-center justify-around z-40 select-none pb-safe">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 material-glass border-t-0 shadow-[0_-8px_24px_rgba(0,0,0,0.04)] h-20 flex items-center justify-around z-40 select-none pb-safe px-2">
         {[
           { id: "dashboard", label: "Home", icon: Home },
           { id: "detect", label: "Detect", icon: Camera },
           { id: "market", label: "Market", icon: Store },
-          { id: "activity", label: "Farm Log", icon: ClipboardList },
-          { id: "ai", label: "Kisan AI", icon: Bot }
+          { id: "activity", label: "Logs", icon: ClipboardList },
+          { id: "ai", label: "AI", icon: Bot }
         ].map((dockItem) => (
-          <button
+          <motion.button
             key={dockItem.id}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             id={`dock-nav-btn-${dockItem.id}`}
             onClick={() => {
               setCurrentTab(dockItem.id as any);
               stopTTS();
             }}
-            className={`flex flex-col items-center justify-center p-1 transition-all focus:outline-none pointer-events-auto cursor-pointer ${
+            className={`flex flex-col items-center justify-center p-2 rounded-2xl transition-colors focus:outline-none cursor-pointer ${
               currentTab === dockItem.id
-                ? "text-[#2F7D4E] dark:text-[#4ADE80] scale-110"
-                : "text-[#8E8E93] hover:text-[#5A5A5F]"
+                ? "text-content-primary"
+                : "text-content-muted hover:text-content-primary hover:bg-border-subtle"
             }`}
           >
-            <dockItem.icon size={18} />
-            <span className="text-[10px] font-extrabold mt-0.5 tracking-wider uppercase">{dockItem.label}</span>
-          </button>
+            <dockItem.icon size={22} strokeWidth={currentTab === dockItem.id ? 2 : 1.5} />
+            <span className="text-micro font-medium mt-1">{dockItem.label}</span>
+          </motion.button>
         ))}
       </div>
+
+      {/* 🚀 Universal RAMU Floating Command Center */}
+      <AnimatePresence>
+        {currentTab !== "ai" && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            className="fixed bottom-24 lg:bottom-8 right-6 z-40"
+          >
+            <LivingSurface
+              tier="interactive"
+              onClick={() => setCurrentTab("ai")}
+              className="flex items-center justify-center w-14 h-14 rounded-full bg-content-primary text-surface-base shadow-2xl hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-shadow cursor-pointer relative group"
+            >
+              <Bot size={24} />
+              {/* RAMU Idle 'Observing' state - calm ambient pulse */}
+              <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-signal-info opacity-40" style={{ animationDuration: '3s' }}></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-signal-info border-[1.5px] border-surface-base"></span>
+              </span>
+            </LivingSurface>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* === NOTIFICATION PANEL === */}
       <AnimatePresence>
@@ -507,60 +592,63 @@ export default function App() {
                 onClick={() => setShowNotifications(false)}
                 className="fixed inset-0 bg-black/20 dark:bg-black/40 z-50"
               />
-              {/* Panel */}
+              {/* Premium Floating Panel */}
               <motion.div
-                initial={{ x: 340 }}
-                animate={{ x: 0 }}
-                exit={{ x: 340 }}
+                initial={{ x: 380, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 380, opacity: 0 }}
                 transition={{ type: "spring", damping: 28, stiffness: 300 }}
-                className="fixed right-0 top-0 h-full w-[340px] bg-white dark:bg-[#1C1C1E] border-l border-[#D4CFC7] dark:border-[#2C2C2E] shadow-2xl z-50 flex flex-col"
+                className="fixed right-6 top-6 bottom-6 w-[360px] material-glass rounded-[2rem] shadow-2xl z-50 flex flex-col overflow-hidden"
               >
-                <div className="flex items-center justify-between p-5 border-b border-[#D4CFC7]/30 dark:border-white/10">
-                  <div className="flex items-center gap-2">
-                    <Bell size={18} className="text-[#2F7D4E]" />
-                    <h2 className="text-sm font-extrabold text-[#1C1C1E] dark:text-[#F5F5F7] uppercase tracking-wider">Notifications</h2>
+                <div className="flex items-center justify-between p-6 border-b border-border-subtle">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-surface-elevated flex items-center justify-center text-content-primary">
+                      <Bell size={16} />
+                    </div>
+                    <h2 className="text-body-lg font-bold text-content-primary">Intelligence Center</h2>
                     {alerts.length > 0 && (
-                      <span className="text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400 px-1.5 py-0.5 rounded-md">{alerts.length}</span>
+                      <span className="text-micro font-bold bg-signal-critical text-white px-2 py-0.5 rounded-full">{alerts.length}</span>
                     )}
                   </div>
-                  <button onClick={() => setShowNotifications(false)} className="w-8 h-8 rounded-lg bg-[#EDE8E0] dark:bg-[#2C2C2E] flex items-center justify-center hover:bg-[#D4CFC7] dark:hover:bg-[#3A3A3C] transition-colors cursor-pointer">
+                  <button onClick={() => setShowNotifications(false)} className="w-8 h-8 rounded-full bg-surface-elevated flex items-center justify-center hover:bg-border-subtle transition-colors cursor-pointer text-content-muted hover:text-content-primary">
                     <X size={16} />
                   </button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-3 notification-scroll">
                   {alerts.length === 0 ? (
-                    <div className="text-center py-12 space-y-2">
-                      <Bell size={32} className="text-[#D4CFC7] dark:text-[#3A3A3C] mx-auto" />
-                      <p className="text-xs font-semibold text-[#8E8E93]">All clear! No active alerts.</p>
+                    <div className="text-center py-16 space-y-3">
+                      <div className="w-16 h-16 rounded-full bg-surface-elevated mx-auto flex items-center justify-center">
+                        <Bell size={24} className="text-content-muted" />
+                      </div>
+                      <p className="text-body-md font-medium text-content-secondary">All clear</p>
+                      <p className="text-body-sm text-content-muted">No active intelligence alerts.</p>
                     </div>
                   ) : (
                     alerts.map((alert, idx) => (
                       <motion.div
                         key={alert.id}
-                        initial={{ opacity: 0, x: 30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.08 }}
-                        className={`p-4 rounded-2xl border-l-4 space-y-2 ${
-                          alert.severity === "high"
-                            ? "bg-rose-50/80 dark:bg-rose-950/15 border-rose-500"
-                            : "bg-amber-50/80 dark:bg-amber-950/15 border-[#D96C3B]"
-                        }`}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.08, type: "spring", damping: 20 }}
+                        className="material-surface p-4 rounded-2xl relative overflow-hidden group"
                       >
-                        <div className="flex items-start gap-2">
-                          <AlertTriangle size={14} className={alert.severity === "high" ? "text-rose-500 shrink-0 mt-0.5" : "text-[#D96C3B] shrink-0 mt-0.5"} />
+                        <div className={`absolute left-0 top-0 bottom-0 w-1 ${alert.severity === 'high' ? 'bg-signal-critical' : 'bg-signal-warning'}`} />
+                        
+                        <div className="flex items-start gap-3 ml-2">
+                          <AlertTriangle size={16} className={alert.severity === "high" ? "text-signal-critical shrink-0 mt-0.5" : "text-signal-warning shrink-0 mt-0.5"} />
                           <div className="min-w-0">
-                            <p className="text-xs font-extrabold text-[#1C1C1E] dark:text-[#F5F5F7]">
+                            <p className="text-body-sm font-semibold text-content-primary">
                               {alert.titleKey === "moistureAlertTitle" ? "Critical: Zone B Soil Moisture 42%" : alert.titleKey === "pestAdvisorTitle" ? "Seasonal Alert: Cotton Pest Cycle" : alert.titleKey}
                             </p>
-                            <p className="text-[10px] text-[#5A5A5F] dark:text-[#A1A1A6] mt-0.5 font-medium">{alert.details}</p>
-                            <p className="text-[9px] text-[#8E8E93] mt-1 font-semibold">{alert.timestamp}</p>
+                            <p className="text-caption text-content-secondary mt-1">{alert.details}</p>
+                            <p className="text-micro text-content-muted mt-2 uppercase tracking-wide">{alert.timestamp}</p>
                           </div>
                         </div>
-                        <div className="flex gap-2">
-                          <button onClick={() => { handleDismissAlert(alert.id); }} className="text-[10px] font-bold text-[#8E8E93] px-2.5 py-1.5 border border-[#D4CFC7]/50 dark:border-white/10 rounded-lg hover:bg-[#EDE8E0] dark:hover:bg-[#2C2C2E] transition-colors cursor-pointer">Dismiss</button>
-                          <button onClick={() => { if (alert.tabTarget) { setCurrentTab(alert.tabTarget as any); } setShowNotifications(false); }} className="text-[10px] font-extrabold text-white bg-[#2F7D4E] px-2.5 py-1.5 rounded-lg hover:bg-[#256B3F] flex items-center gap-1 cursor-pointer">
-                            <span>View</span><ChevronRight size={10} />
+                        <div className="flex gap-2 ml-9 mt-4">
+                          <button onClick={() => { handleDismissAlert(alert.id); }} className="text-caption font-medium text-content-secondary px-3 py-1.5 rounded-lg hover:bg-surface-elevated transition-colors cursor-pointer">Dismiss</button>
+                          <button onClick={() => { if (alert.tabTarget) { setCurrentTab(alert.tabTarget as any); } setShowNotifications(false); }} className="text-caption font-semibold text-surface-base bg-content-primary px-3 py-1.5 rounded-lg hover:opacity-90 flex items-center gap-1 cursor-pointer transition-opacity">
+                            <span>Review Data</span><ChevronRight size={12} />
                           </button>
                         </div>
                       </motion.div>
@@ -576,49 +664,53 @@ export default function App() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/40 backdrop-blur-notification z-50 flex flex-col items-center justify-center p-6"
+                className="fixed inset-0 bg-surface-base/60 backdrop-blur-3xl z-50 flex flex-col items-center justify-center p-6"
                 onClick={(e) => { if (e.target === e.currentTarget) setShowNotifications(false); }}
               >
                 <motion.div
-                  initial={{ scale: 0.9, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.9, opacity: 0 }}
+                  initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                  transition={{ type: "spring", damping: 25, stiffness: 300 }}
                   className="w-full max-w-sm space-y-4 max-h-[80vh] overflow-y-auto notification-scroll"
                 >
                   {/* Close button */}
-                  <div className="flex justify-end">
-                    <button onClick={() => setShowNotifications(false)} className="w-10 h-10 rounded-full bg-white/90 dark:bg-[#1C1C1E]/90 flex items-center justify-center shadow-lg cursor-pointer">
-                      <X size={18} className="text-[#1C1C1E] dark:text-[#F5F5F7]" />
+                  <div className="flex justify-between items-center mb-2 px-2">
+                    <h2 className="text-h4 font-bold text-content-primary">Intelligence</h2>
+                    <button onClick={() => setShowNotifications(false)} className="w-10 h-10 rounded-full bg-surface-elevated flex items-center justify-center shadow-sm cursor-pointer text-content-primary">
+                      <X size={18} />
                     </button>
                   </div>
 
                   {alerts.length === 0 ? (
-                    <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} className="bg-white/95 dark:bg-[#1C1C1E]/95 rounded-3xl p-8 text-center shadow-2xl space-y-2">
-                      <Bell size={36} className="text-[#D4CFC7] mx-auto" />
-                      <p className="text-sm font-bold text-[#1C1C1E] dark:text-[#F5F5F7]">All Clear</p>
-                      <p className="text-xs text-[#8E8E93]">No active alerts right now.</p>
-                    </motion.div>
+                    <div className="bg-surface-glass rounded-[2rem] p-8 text-center shadow-xl space-y-3 border border-border-subtle">
+                      <div className="w-16 h-16 rounded-full bg-surface-elevated mx-auto flex items-center justify-center">
+                        <Bell size={24} className="text-content-muted" />
+                      </div>
+                      <p className="text-body-md font-bold text-content-primary">All Clear</p>
+                      <p className="text-body-sm text-content-secondary">No active alerts right now.</p>
+                    </div>
                   ) : (
                     alerts.map((alert, idx) => (
                       <motion.div
                         key={alert.id}
-                        initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                        initial={{ opacity: 0, y: 30, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        transition={{ delay: idx * 0.12, type: "spring", damping: 20 }}
-                        className={`bg-white/95 dark:bg-[#1C1C1E]/95 rounded-3xl p-5 shadow-2xl space-y-3 border ${
-                          alert.severity === "high" ? "border-rose-300/50 dark:border-rose-800/30" : "border-amber-300/50 dark:border-amber-800/30"
+                        transition={{ delay: idx * 0.1, type: "spring", damping: 20 }}
+                        className={`bg-surface-glass rounded-3xl p-5 shadow-xl space-y-3 border ${
+                          alert.severity === "high" ? "border-signal-critical/30" : "border-signal-warning/30"
                         }`}
                       >
-                        <div className="flex items-center gap-2">
-                          <span className={`w-2.5 h-2.5 rounded-full ${alert.severity === "high" ? "bg-rose-500 animate-pulse" : "bg-[#D96C3B]"}`} />
-                          <p className="text-sm font-extrabold text-[#1C1C1E] dark:text-[#F5F5F7]">
+                        <div className="flex items-center gap-3">
+                          <span className={`w-2.5 h-2.5 rounded-full ${alert.severity === "high" ? "bg-signal-critical animate-pulse shadow-[0_0_8px_var(--color-signal-critical)]" : "bg-signal-warning"}`} />
+                          <p className="text-body-sm font-bold text-content-primary">
                             {alert.titleKey === "moistureAlertTitle" ? "Critical: Soil Moisture 42%" : alert.titleKey === "pestAdvisorTitle" ? "Pest Cycle Alert" : alert.titleKey}
                           </p>
                         </div>
-                        <p className="text-xs text-[#5A5A5F] dark:text-[#A1A1A6] font-medium leading-relaxed">{alert.details}</p>
-                        <div className="flex gap-2">
-                          <button onClick={() => handleDismissAlert(alert.id)} className="flex-1 text-xs font-bold text-[#8E8E93] py-2.5 border border-[#D4CFC7]/50 dark:border-white/10 rounded-xl hover:bg-[#EDE8E0] dark:hover:bg-[#2C2C2E] transition-colors cursor-pointer">Dismiss</button>
-                          <button onClick={() => { if (alert.tabTarget) setCurrentTab(alert.tabTarget as any); setShowNotifications(false); }} className="flex-1 text-xs font-extrabold text-white bg-[#2F7D4E] py-2.5 rounded-xl hover:bg-[#256B3F] cursor-pointer">Take Action</button>
+                        <p className="text-body-sm text-content-secondary leading-relaxed">{alert.details}</p>
+                        <div className="flex gap-2 pt-2">
+                          <button onClick={() => handleDismissAlert(alert.id)} className="flex-1 text-caption font-medium text-content-secondary py-3 bg-surface-elevated rounded-xl hover:bg-border-subtle transition-colors cursor-pointer">Dismiss</button>
+                          <button onClick={() => { if (alert.tabTarget) setCurrentTab(alert.tabTarget as any); setShowNotifications(false); }} className="flex-1 text-caption font-semibold text-surface-base bg-content-primary py-3 rounded-xl hover:opacity-90 cursor-pointer transition-opacity">Review Data</button>
                         </div>
                       </motion.div>
                     ))
