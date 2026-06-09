@@ -28,6 +28,7 @@ interface DetectProps {
   onNavigateTab: (tab: any) => void;
   scans: ScanRecord[];
   onAddScan: (record: ScanRecord) => void;
+  onAskRamu?: (context: string) => void;
 }
 
 // Preloaded beautiful realistic Base64 leaf disease images to make testing 100% interactive and visual
@@ -84,7 +85,8 @@ export default function Detect({
   selectedLanguage,
   onNavigateTab,
   scans,
-  onAddScan
+  onAddScan,
+  onAskRamu
 }: DetectProps) {
   const t = TRANSLATIONS[selectedLanguage];
 
@@ -223,24 +225,24 @@ export default function Detect({
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 select-none font-sans">
       {/* Left Input Workspace - 5 cols */}
       <div className="lg:col-span-5 space-y-6">
-        <section className="bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl p-5 shadow-sm space-y-4">
-          <div className="border-b border-[#D4CFC7]/30 pb-2">
-            <h2 className="text-sm font-extrabold text-[#1C1C1E] dark:text-[#F5F5F7] tracking-wider uppercase flex items-center gap-1.5">
-              <Camera size={16} className="text-[#2F7D4E]" />
+        <section className="material-elevated border border-border-subtle rounded-3xl p-6 shadow-sm space-y-5">
+          <div className="border-b border-border-subtle pb-3">
+            <h2 className="text-body-md font-bold text-content-primary tracking-widest uppercase flex items-center gap-2">
+              <Camera size={20} className="text-signal-success" />
               {t.cameraFeed}
             </h2>
-            <p className="text-xs text-[#8E8E93] leading-relaxed mt-0.5">{t.cameraInstructions}</p>
+            <p className="text-caption text-content-muted leading-relaxed mt-1">{t.cameraInstructions}</p>
           </div>
 
           {/* Adaptive Camera / Upload Area */}
           {isMobile ? (
             /* Mobile/Tablet: Camera-first with upload as secondary */
-            <div className="space-y-3">
-              <label className="cursor-pointer flex flex-col items-center justify-center gap-3 bg-[#2F7D4E] hover:bg-[#256B3F] text-white rounded-2xl p-6 transition-colors shadow-sm min-h-[140px]">
-                <Camera size={36} />
-                <div className="text-center space-y-1">
-                  <p className="text-sm font-bold">{t.captureScan}</p>
-                  <p className="text-[10px] font-medium opacity-80">Tap to open camera & scan leaf</p>
+            <div className="space-y-4">
+              <label className="cursor-pointer flex flex-col items-center justify-center gap-4 bg-content-primary hover:opacity-90 text-surface-base rounded-2xl p-8 transition-opacity shadow-md min-h-[160px]">
+                <Camera size={40} />
+                <div className="text-center space-y-1.5">
+                  <p className="text-body-md font-bold">{t.captureScan}</p>
+                  <p className="text-caption font-medium opacity-80 tracking-wide">Tap to open camera & scan leaf</p>
                 </div>
                 <input
                   id="camera-capture-input"
@@ -251,8 +253,8 @@ export default function Detect({
                   onChange={handleFileUpload}
                 />
               </label>
-              <label className="cursor-pointer flex items-center justify-center gap-2 bg-[#EDE8E0] hover:bg-[#D4CFC7] dark:bg-[#2C2C2E] dark:hover:bg-[#3A3A3C] text-[#1C1C1E] dark:text-[#F5F5F7] text-xs font-bold px-4 py-3 rounded-xl transition-colors w-full">
-                <Upload size={14} />
+              <label className="cursor-pointer flex items-center justify-center gap-2 bg-surface-base hover:bg-border-subtle text-content-primary text-body-sm font-bold px-5 py-4 rounded-xl border border-border-subtle transition-colors w-full shadow-sm">
+                <Upload size={18} />
                 <span>{t.uploadGallery}</span>
                 <input
                   id="leaf-upload-input"
@@ -265,14 +267,14 @@ export default function Detect({
             </div>
           ) : (
             /* Desktop: Drag & Drop Area */
-            <div className="relative border-2 border-dashed border-[#D4CFC7] dark:border-white/10 rounded-2xl p-6 text-center space-y-3 bg-[#F6F4F0]/40 dark:bg-black/10 flex flex-col items-center justify-center transition-all duration-fast min-h-[160px]">
-              <Upload size={28} className="text-[#8E8E93] animate-bounce-slow" />
+            <div className="relative border-2 border-dashed border-border-strong rounded-2xl p-8 text-center space-y-4 bg-surface-base flex flex-col items-center justify-center transition-all duration-fast min-h-[180px] hover:border-signal-success/50 group">
+              <Upload size={32} className="text-content-muted group-hover:text-signal-success animate-bounce-slow transition-colors" />
               <div className="space-y-1">
-                <p className="text-xs font-bold text-[#1C1C1E] dark:text-[#F5F5F7]">{t.captureScan}</p>
-                <p className="text-[10px] text-[#8E8E93] font-semibold">Supports leaf diagnostics via camera photo upload</p>
+                <p className="text-body-sm font-bold text-content-primary">{t.captureScan}</p>
+                <p className="text-caption text-content-muted font-semibold tracking-wide">Supports leaf diagnostics via camera photo upload</p>
               </div>
               
-              <label className="cursor-pointer bg-[#2F7D4E] hover:bg-[#256B3F] text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-colors shadow-xs">
+              <label className="cursor-pointer bg-content-primary hover:opacity-90 text-surface-base text-body-sm font-bold px-6 py-3 rounded-xl transition-opacity shadow-sm">
                 <span>{t.uploadGallery}</span>
                 <input 
                   id="leaf-upload-input"
@@ -286,37 +288,43 @@ export default function Detect({
           )}
 
           {/* Realistic interactive Samples Loader section */}
-          <div className="space-y-2 pt-2 border-t border-[#D4CFC7]/30 dark:border-white/5">
-            <label className="text-[11px] font-extrabold text-[#8E8E93] uppercase tracking-wider block">
+          <div className="space-y-3 pt-3 border-t border-border-subtle">
+            <label className="text-micro font-bold text-content-muted uppercase tracking-widest block">
               💡 Or Select Crop Samples (for Instant Diagnostic Testing)
             </label>
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-1 gap-3">
               {SAMPLE_PLANTS.map((plant, index) => (
                 <button
                   key={index}
                   id={`sample-plant-btn-${index}`}
                   onClick={() => processImageAnalysis(plant.img, plant.crop, plant)}
-                  className="flex items-center gap-3 p-2 bg-[#F6F4F0] hover:bg-[#EDE8E0] dark:bg-[#121214] dark:hover:bg-[#202022] border border-[#D4CFC7]/30 dark:border-white/5 rounded-xl text-left transition-colors"
+                  className="flex items-center gap-4 p-3 bg-surface-base hover:bg-border-subtle border border-border-subtle rounded-2xl text-left transition-colors"
                 >
-                  <img src={plant.img} alt={plant.name} className="w-10 h-10 object-cover rounded-lg shrink-0 pointer-events-none" />
+                  <img src={plant.img} alt={plant.name} className="w-12 h-12 object-cover rounded-xl shrink-0 pointer-events-none shadow-sm" />
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-[#1C1C1E] dark:text-[#F5F5F7] truncate">{plant.name}</p>
-                    <p className="text-[10px] text-[#2F7D4E] dark:text-[#4ADE80] font-bold">Diagnose sample disease</p>
+                    <p className="text-body-sm font-bold text-content-primary truncate">{plant.name}</p>
+                    <p className="text-caption text-signal-success font-bold tracking-wide mt-0.5">Diagnose sample disease</p>
                   </div>
                 </button>
               ))}
             </div>
           </div>
-          {errorText && <p className="text-xs font-semibold text-red-500 text-center" role="alert">{errorText}</p>}
+          {errorText && <p className="text-caption font-bold text-signal-critical text-center" role="alert">{errorText}</p>}
         </section>
 
         {/* Diagnostic History List */}
-        <section className="bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl p-5 shadow-sm">
-          <h3 className="text-xs font-extrabold text-[#8E8E93] tracking-widest uppercase mb-3">{t.recentScans}</h3>
+        <section className="material-elevated border border-border-subtle rounded-3xl p-6 shadow-sm">
+          <h3 className="text-micro font-bold text-content-muted tracking-widest uppercase mb-4">{t.recentScans}</h3>
           
-          <div className="space-y-2 max-h-[220px] overflow-y-auto">
+          <div className="space-y-3 max-h-[220px] overflow-y-auto pr-1 chat-scroll">
             {scans.length === 0 ? (
-              <p className="text-xs font-semibold text-[#8E8E93] text-center py-4">{t.noScansYet}</p>
+              <div className="text-center py-10 flex flex-col items-center justify-center">
+                <div className="w-16 h-16 rounded-full bg-surface-base border border-border-subtle flex items-center justify-center mb-3 shadow-sm">
+                  <Camera className="text-content-muted" size={24} />
+                </div>
+                <p className="text-body-md font-bold text-content-primary mb-1">No Scans Yet</p>
+                <p className="text-caption text-content-secondary max-w-[200px] mx-auto leading-relaxed">Capture a photo of your crop leaves to begin diagnosis.</p>
+              </div>
             ) : (
               scans.map((scan) => (
                 <button
@@ -328,25 +336,25 @@ export default function Detect({
                     const speakStr = `Displaying ${scan.cropName} report: ${scan.diseaseName}. Severity ${scan.severity}.`;
                     playTTS(speakStr);
                   }}
-                  className={`w-full p-2.5 flex items-center justify-between rounded-xl border transition-all text-left ${
+                  className={`w-full p-3 flex items-center justify-between rounded-2xl border transition-all text-left ${
                     selectedResult?.id === scan.id
-                      ? "bg-[#E8F5EC] border-[#2F7D4E] dark:bg-[#153B22]/10"
-                      : "bg-[#F6F4F0]/50 border-transparent dark:bg-[#121214] hover:bg-[#EDE8E0] dark:hover:bg-[#1E1E20]"
+                      ? "bg-signal-success/10 border-signal-success/40"
+                      : "bg-surface-base border-border-subtle hover:border-border-strong"
                   }`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <img src={scan.croppedImage} alt={scan.cropName} className="w-8 h-8 object-cover rounded-md pointer-events-none shrink-0" />
+                  <div className="flex items-center gap-3 min-w-0">
+                    <img src={scan.croppedImage} alt={scan.cropName} className="w-10 h-10 object-cover rounded-lg pointer-events-none shrink-0 border border-border-subtle" />
                     <div className="min-w-0">
-                      <p className="text-xs font-bold text-[#1C1C1E] dark:text-[#F5F5F7] truncate">{scan.diseaseName}</p>
-                      <p className="text-[9px] text-[#8E8E93] font-semibold">{scan.timestamp}</p>
+                      <p className="text-body-sm font-bold text-content-primary truncate">{scan.diseaseName}</p>
+                      <p className="text-caption text-content-muted font-bold tracking-wide mt-0.5">{scan.timestamp}</p>
                     </div>
                   </div>
-                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-sm shrink-0 ${
+                  <span className={`text-micro font-bold px-2 py-1 rounded-md shrink-0 uppercase tracking-widest ${
                     scan.severity === "High" 
-                      ? "bg-rose-100 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400" 
+                      ? "bg-signal-critical/10 text-signal-critical border border-signal-critical/20" 
                       : scan.severity === "Moderate" 
-                      ? "bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-[#D96C3B]"
-                      : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30"
+                      ? "bg-signal-warning/10 text-signal-warning border border-signal-warning/20"
+                      : "bg-signal-success/10 text-signal-success border border-signal-success/20"
                   }`}>
                     {scan.severity}
                   </span>
@@ -366,12 +374,12 @@ export default function Detect({
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
-              className="bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl p-8 text-center flex flex-col items-center justify-center min-h-[400px] shadow-sm space-y-4"
+              className="material-elevated border border-border-subtle rounded-3xl p-8 text-center flex flex-col items-center justify-center min-h-[400px] shadow-sm space-y-6"
             >
-              <RefreshCw className="text-[#2F7D4E] animate-spin w-12 h-12" id="spinner-ic" />
-              <div className="space-y-1">
-                <h3 className="text-sm font-bold text-[#1C1C1E] dark:text-[#F5F5F7] animate-pulse">{t.diagnosing}</h3>
-                <p className="text-xs text-[#8E8E93] font-semibold">Gemini AI evaluates leaf spots, lesions, and chloroplast patterns...</p>
+              <RefreshCw className="text-signal-success animate-spin w-14 h-14" id="spinner-ic" />
+              <div className="space-y-2">
+                <h3 className="text-body-lg font-bold text-content-primary animate-pulse tracking-wide">{t.diagnosing}</h3>
+                <p className="text-body-sm text-content-muted font-medium max-w-md mx-auto">Gemini AI evaluates leaf spots, lesions, and chloroplast patterns...</p>
               </div>
             </motion.div>
           ) : selectedResult ? (
@@ -380,39 +388,41 @@ export default function Detect({
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl p-5 sm:p-6 shadow-sm space-y-5"
+              className="material-elevated border border-border-subtle rounded-3xl p-6 sm:p-8 shadow-sm space-y-6"
             >
               {/* Header Details */}
-              <div className="flex flex-col sm:flex-row items-start justify-between gap-3 border-b border-[#D4CFC7]/30 pb-4">
-                <div className="flex gap-4">
-                  <img src={selectedResult.croppedImage} alt="Crop Diagnostic Spot" className="w-16 h-16 object-cover rounded-xl border border-[#D4CFC7]/40 pointer-events-none" />
-                  <div>
-                    <span className="text-[10px] font-bold text-[#2F7D4E] dark:text-[#4ADE80] bg-[#E8F5EC] dark:bg-[#153B22] px-2 py-0.5 rounded-full uppercase tracking-wider">
-                      {selectedResult.cropName} Crop Diagnostic
-                    </span>
-                    <h3 className="text-lg font-extrabold text-[#1C1C1E] dark:text-[#F5F5F7] leading-tight select-text mt-1">{selectedResult.diseaseName}</h3>
-                    <p className="text-[11px] text-[#8E8E93] font-medium mt-0.5">Scanned: {selectedResult.timestamp}</p>
+              <div className="flex flex-col sm:flex-row items-start justify-between gap-4 border-b border-border-subtle pb-6">
+                <div className="flex gap-5">
+                  <img src={selectedResult.croppedImage} alt="Crop Diagnostic Spot" className="w-20 h-20 object-cover rounded-2xl border border-border-subtle shadow-sm pointer-events-none" />
+                  <div className="flex flex-col justify-center">
+                    <div className="inline-flex items-center bg-signal-success/10 border border-signal-success/20 px-2.5 py-1 rounded-lg self-start mb-2">
+                      <span className="text-micro font-bold text-signal-success uppercase tracking-widest">
+                        {selectedResult.cropName} Diagnostic
+                      </span>
+                    </div>
+                    <h3 className="text-heading-3 text-content-primary leading-tight select-text">{selectedResult.diseaseName}</h3>
+                    <p className="text-caption text-content-muted font-bold mt-1.5 tracking-wide">Scanned: {selectedResult.timestamp}</p>
                   </div>
                 </div>
 
                 {/* Speech read aloud button */}
-                <div className="shrink-0 flex items-center">
+                <div className="shrink-0 flex items-center pt-2 sm:pt-0">
                   {speaking ? (
                     <button
                       id="stop-tts-btn"
                       onClick={stopTTS}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 text-xs font-bold rounded-xl border border-rose-200/50 hover:bg-rose-100 transition-colors cursor-pointer"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-signal-critical/10 text-signal-critical text-caption font-bold rounded-xl border border-signal-critical/20 hover:bg-signal-critical/20 transition-colors shadow-sm"
                     >
-                      <VolumeX size={14} />
+                      <VolumeX size={16} />
                       <span>{t.stopReadAloud}</span>
                     </button>
                   ) : (
                     <button
                       id="play-tts-btn"
                       onClick={() => playTTS(`${selectedResult.diseaseName}. Severity list is ${selectedResult.severity}. Symptoms: ${selectedResult.symptoms.join(", ")}. Treatment: ${selectedResult.treatment.biological}`)}
-                      className="flex items-center gap-1.5 px-3.5 py-2.5 bg-[#E8F5EC] text-[#2F7D4E] dark:bg-[#153B22]/10 dark:text-[#4ADE80] text-xs font-bold rounded-xl border border-[#c5e6cf]/40 hover:bg-[#d6eedb] transition-colors cursor-pointer animate-pulse"
+                      className="flex items-center gap-2 px-4 py-2.5 bg-signal-success/10 text-signal-success text-caption font-bold rounded-xl border border-signal-success/20 hover:bg-signal-success/20 transition-colors animate-pulse shadow-sm"
                     >
-                      <Volume2 size={14} />
+                      <Volume2 size={16} />
                       <span>{t.readAloud}</span>
                     </button>
                   )}
@@ -420,88 +430,95 @@ export default function Detect({
               </div>
 
               {/* Confidence & Severity indices */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#F6F4F0] dark:bg-[#1C1C1E] border border-[#D4CFC7]/30 dark:border-white/5 rounded-2xl p-3.5">
-                  <p className="text-[10px] font-extrabold text-[#8E8E93] uppercase tracking-wider">{t.confidenceLevel}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-2xl font-mono font-extrabold text-[#2F7D4E] dark:text-[#4ADE80]">{selectedResult.confidence}%</span>
-                    <div className="flex-1 bg-[#EDE8E0] dark:bg-[#2C2C2E] h-2 rounded-full overflow-hidden">
-                      <div className="bg-[#2F7D4E] h-full" style={{ width: `${selectedResult.confidence}%` }} />
+              <div className="grid grid-cols-2 gap-5">
+                <div className="bg-surface-base border border-border-subtle rounded-2xl p-5 shadow-sm">
+                  <p className="text-micro font-bold text-content-muted uppercase tracking-widest">{t.confidenceLevel}</p>
+                  <div className="flex items-center gap-4 mt-3">
+                    <span className="text-heading-2 font-mono text-signal-success">{selectedResult.confidence}%</span>
+                    <div className="flex-1 bg-surface-elevated border border-border-subtle h-2.5 rounded-full overflow-hidden">
+                      <div className="bg-signal-success h-full transition-all duration-1000 ease-out" style={{ width: `${selectedResult.confidence}%` }} />
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-[#F6F4F0] dark:bg-[#1C1C1E] border border-[#D4CFC7]/30 dark:border-white/5 rounded-2xl p-3.5">
-                  <p className="text-[10px] font-extrabold text-[#8E8E93] uppercase tracking-wider">{t.severity}</p>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <AlertCircle size={18} className={
-                      selectedResult.severity === "High" ? "text-rose-500" :
-                      selectedResult.severity === "Moderate" ? "text-[#D96C3B]" : "text-emerald-500"
+                <div className="bg-surface-base border border-border-subtle rounded-2xl p-5 shadow-sm">
+                  <p className="text-micro font-bold text-content-muted uppercase tracking-widest">{t.severity}</p>
+                  <div className="flex items-center gap-3 mt-3">
+                    <AlertCircle size={28} className={
+                      selectedResult.severity === "High" ? "text-signal-critical" :
+                      selectedResult.severity === "Moderate" ? "text-signal-warning" : "text-signal-success"
                     } />
-                    <span className="text-base font-bold text-[#1C1C1E] dark:text-[#F5F5F7]">{selectedResult.severity} alert level</span>
+                    <span className="text-heading-3 text-content-primary">{selectedResult.severity}</span>
                   </div>
                 </div>
               </div>
 
               {/* Leaf Symptoms Bullet points */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-extrabold text-[#8E8E93] uppercase tracking-widest">{t.symptoms}</h4>
-                <ul className="grid grid-cols-1 gap-2">
+              <div className="space-y-3">
+                <h4 className="text-micro font-bold text-content-muted uppercase tracking-widest">{t.symptoms}</h4>
+                <ul className="grid grid-cols-1 gap-2.5">
                   {selectedResult.symptoms.map((sym, idx) => (
-                    <li key={idx} className="bg-[#F6F4F0]/40 dark:bg-black/10 p-2.5 rounded-xl text-xs font-semibold text-[#5A5A5F] dark:text-[#A1A1A6] border-l-2 border-[#D4CFC7] flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                      <span>{sym}</span>
+                    <li key={idx} className="bg-surface-base border border-border-subtle p-3.5 rounded-xl text-body-sm font-medium text-content-primary flex items-start gap-3 shadow-sm">
+                      <span className="w-2 h-2 rounded-full bg-signal-warning shrink-0 mt-1.5 shadow-[0_0_6px_var(--color-signal-warning)]" />
+                      <span className="leading-relaxed">{sym}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
               {/* Core Protocols treatment */}
-              <div className="space-y-3.5 pt-3 border-t border-[#D4CFC7]/30 dark:border-white/5">
-                <h4 className="text-xs font-extrabold text-[#8E8E93] uppercase tracking-widest">{t.treatmentPlan}</h4>
+              <div className="space-y-4 pt-5 border-t border-border-subtle">
+                <h4 className="text-micro font-bold text-content-muted uppercase tracking-widest">{t.treatmentPlan}</h4>
                 
-                <div className="grid grid-cols-1 gap-3">
-                  <div className="p-3.5 rounded-2.5xl bg-emerald-50/40 dark:bg-emerald-950/10 border border-[#2F7D4E]/20 space-y-1">
-                    <p className="text-xs font-extrabold text-[#2F7D4E] dark:text-[#4ADE80] flex items-center gap-1.5">
-                      <Bot size={14} />
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="p-5 rounded-2xl bg-signal-success/5 border border-signal-success/20 space-y-2">
+                    <p className="text-body-sm font-bold text-signal-success flex items-center gap-2 tracking-wide uppercase">
+                      <Bot size={16} />
                       {t.biological}
                     </p>
-                    <p className="text-xs text-[#5A5A5F] dark:text-[#A1A1A6] font-semibold leading-relaxed pl-1">{selectedResult.treatment.biological}</p>
+                    <p className="text-body-sm text-content-primary font-medium leading-relaxed pl-1">{selectedResult.treatment.biological}</p>
                   </div>
 
-                  <div className="p-3.5 rounded-2.5xl bg-orange-50/40 dark:bg-orange-950/10 border border-[#D96C3B]/20 space-y-1">
-                    <p className="text-xs font-extrabold text-[#D96C3B] flex items-center gap-1.5">
-                      <Sparkles size={14} />
+                  <div className="p-5 rounded-2xl bg-signal-warning/5 border border-signal-warning/20 space-y-2">
+                    <p className="text-body-sm font-bold text-signal-warning flex items-center gap-2 tracking-wide uppercase">
+                      <Sparkles size={16} />
                       {t.chemical}
                     </p>
-                    <p className="text-xs text-[#5A5A5F] dark:text-[#A1A1A6] font-semibold leading-relaxed pl-1">{selectedResult.treatment.chemical}</p>
+                    <p className="text-body-sm text-content-primary font-medium leading-relaxed pl-1">{selectedResult.treatment.chemical}</p>
                   </div>
 
-                  <div className="p-3.5 rounded-2.5xl bg-sky-50/40 dark:bg-sky-950/10 border border-sky-400/20 space-y-1">
-                    <p className="text-xs font-extrabold text-sky-700 dark:text-sky-400 flex items-center gap-1.5">
-                      <Compass size={14} />
+                  <div className="p-5 rounded-2xl bg-[#0EA5E9]/5 border border-[#0EA5E9]/20 space-y-2 dark:bg-[#0EA5E9]/10">
+                    <p className="text-body-sm font-bold text-[#0EA5E9] flex items-center gap-2 tracking-wide uppercase">
+                      <Compass size={16} />
                       {t.preventive}
                     </p>
-                    <p className="text-xs text-[#5A5A5F] dark:text-[#A1A1A6] font-semibold leading-relaxed pl-1">{selectedResult.treatment.preventive}</p>
+                    <p className="text-body-sm text-content-primary font-medium leading-relaxed pl-1">{selectedResult.treatment.preventive}</p>
                   </div>
                 </div>
               </div>
 
               {/* Direct links to Farmer Forums or chat */}
-              <div className="flex flex-col sm:flex-row items-center gap-3 pt-3 border-t border-[#D4CFC7]/20 select-none">
+              <div className="flex flex-col sm:flex-row items-center gap-4 pt-5 border-t border-border-subtle select-none">
                 <button
                   id="advisor-nav-btn"
-                  onClick={() => onNavigateTab("ai")}
-                  className="w-full sm:flex-1 h-12 bg-[#2F7D4E] hover:bg-[#256B3F] text-white font-bold text-xs rounded-2xl transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={() => {
+                    if (onAskRamu) {
+                      const contextPayload = `[SYSTEM CONTEXT: Uploaded ${selectedResult.cropName} Scan - Diagnosis: ${selectedResult.diseaseName} (${selectedResult.confidence}% confidence). Severity: ${selectedResult.severity}] Please analyze this and give me the next steps.`;
+                      onAskRamu(contextPayload);
+                    } else {
+                      onNavigateTab("ai");
+                    }
+                  }}
+                  className="w-full sm:flex-1 h-14 bg-content-primary hover:opacity-90 text-surface-base font-bold text-body-md rounded-2xl transition-opacity flex items-center justify-center gap-3 cursor-pointer shadow-md"
                 >
-                  <Bot size={15} />
+                  <Bot size={18} />
                   <span>{t.askAdvisorAboutThis}</span>
-                  <ArrowRight size={14} />
+                  <ArrowRight size={16} />
                 </button>
                 <button
                   id="procure-fungicide-btn"
                   onClick={() => onNavigateTab("market")}
-                  className="w-full sm:flex-1 h-12 bg-transparent text-[#2F7D4E] dark:text-[#4ADE80] font-extrabold text-xs rounded-2xl border border-[#2F7D4E] transition-all flex items-center justify-center gap-1 cursor-pointer"
+                  className="w-full sm:flex-1 h-14 bg-surface-base text-content-primary font-bold text-body-md rounded-2xl border border-border-subtle hover:border-border-strong transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
                 >
                   <span>Procure Treatments in Mandi</span>
                 </button>
@@ -509,11 +526,13 @@ export default function Detect({
 
             </motion.div>
           ) : (
-            <div className="bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl p-8 text-center flex flex-col items-center justify-center min-h-[400px] shadow-sm space-y-4">
-              <Bot size={44} className="text-[#8E8E93]" />
-              <div className="space-y-1">
-                <h3 className="text-sm font-bold text-[#1C1C1E] dark:text-[#F5F5F7]">Awaiting Foliage Analysis</h3>
-                <p className="text-xs text-[#8E8E93] max-w-xs mx-auto">Upload a leaf image or select one of the crop templates below left for smart diagnostics testing.</p>
+            <div className="material-elevated border border-border-subtle rounded-3xl p-8 text-center flex flex-col items-center justify-center min-h-[400px] shadow-sm space-y-5">
+              <div className="w-16 h-16 rounded-2xl bg-surface-base border border-border-subtle flex items-center justify-center shadow-sm">
+                <Bot size={32} className="text-content-muted" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-heading-3 text-content-primary">Awaiting Foliage Analysis</h3>
+                <p className="text-body-sm text-content-muted font-medium max-w-sm mx-auto leading-relaxed">Upload a leaf image or select one of the crop templates below left for smart diagnostics testing.</p>
               </div>
             </div>
           )}

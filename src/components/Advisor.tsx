@@ -18,7 +18,10 @@ import {
   ArrowRight,
   RefreshCw,
   X,
-  History
+  History,
+  Camera,
+  Image as ImageIcon,
+  FileText
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { UserProfile, ChatMessage } from "../types";
@@ -31,6 +34,7 @@ interface AdvisorProps {
   chatHistory: ChatMessage[];
   onAddChatMessage: (msg: ChatMessage) => void;
   onTriggerIrrigation: (zone: string) => void;
+  contextEntryTab?: "dashboard" | "detect" | "market" | "activity" | "ai" | "settings";
 }
 
 export default function Advisor({
@@ -39,7 +43,8 @@ export default function Advisor({
   onNavigateTab,
   chatHistory,
   onAddChatMessage,
-  onTriggerIrrigation
+  onTriggerIrrigation,
+  contextEntryTab
 }: AdvisorProps) {
   const t = TRANSLATIONS[selectedLanguage];
 
@@ -238,32 +243,55 @@ export default function Advisor({
     }
   };
 
+  const handleAttachmentClick = (type: string) => {
+    const granted = window.confirm(`KisanMitr AI would like to access your ${type}. Allow?`);
+    if (granted) {
+      const input = document.createElement("input");
+      input.type = "file";
+      if (type === "Camera") {
+        input.accept = "image/*";
+        input.capture = "environment";
+      } else if (type === "Gallery") {
+        input.accept = "image/*";
+      } else {
+        input.accept = ".pdf,.doc,.docx,.txt";
+      }
+      input.onchange = (e: any) => {
+        const file = e.target.files?.[0];
+        if (file) {
+          setInputMsg((prev) => `[Attached ${type}: ${file.name}] ` + prev);
+        }
+      };
+      input.click();
+    }
+  };
+
   // Group chat history by user queries for the history drawer
   const userQueries = chatHistory.filter(m => m.sender === "user");
 
   return (
-    <div className="bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl shadow-sm select-none font-sans relative flex flex-col h-[calc(100vh-12rem)]">
+    <div className="flex flex-col h-full w-full bg-surface-base select-none font-sans relative overflow-hidden">
       {/* Advisor header */}
-      <div className="border-b border-[#D4CFC7]/30 p-4 sm:p-5 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-[#E8F5EC] dark:bg-[#153B22]/15 text-[#2F7D4E] rounded-xl flex items-center justify-center">
-            <Bot size={20} className="animate-bounce-slow" />
+      <div className="border-b border-border-subtle p-5 flex items-center justify-between shrink-0 bg-surface-glass backdrop-blur-md relative z-10">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-signal-success/10 text-signal-success rounded-2xl flex items-center justify-center border border-signal-success/20">
+            <Bot size={24} className="animate-pulse" />
           </div>
           <div>
-            <h2 className="text-sm font-extrabold text-[#1C1C1E] dark:text-[#F5F5F7]">KISAN AI CHAT ASSISTANT</h2>
-            <p className="text-[10px] text-[#2F7D4E] dark:text-[#4ADE80] font-bold">Multilingual Agronomist · Speaks Hindi, Marathi, Tamil</p>
+            <h2 className="text-body-md font-bold text-content-primary tracking-widest uppercase">RAMU Intelligence</h2>
+            <p className="text-caption text-signal-success font-bold mt-0.5 tracking-wider">Universal Command Center</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {speakingText && (
             <button
               id="advisor-mute-btn"
               onClick={stopSpeaking}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-rose-50 text-rose-700 dark:bg-rose-950/20 dark:text-rose-400 text-[10px] font-bold rounded-lg border border-rose-200/50"
+              className="flex items-center gap-2 px-4 py-2 bg-signal-critical/10 text-signal-critical text-caption font-bold rounded-xl border border-signal-critical/20 hover:bg-signal-critical/20 transition-colors"
             >
-              <VolumeX size={12} />
-              <span>Mute Voice API</span>
+              <VolumeX size={16} />
+              <span>Mute Synthesis</span>
             </button>
           )}
 
@@ -271,14 +299,14 @@ export default function Advisor({
           <button
             id="chat-history-toggle"
             onClick={() => setShowHistory(!showHistory)}
-            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+            className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-fast cursor-pointer ${
               showHistory
-                ? "bg-[#2F7D4E] text-white"
-                : "bg-[#EDE8E0] hover:bg-[#D4CFC7] dark:bg-[#2C2C2E] dark:hover:bg-[#3A3A3C] text-[#5A5A5F] dark:text-[#A1A1A6]"
+                ? "bg-content-primary text-surface-base shadow-md"
+                : "bg-surface-elevated hover:bg-border-subtle text-content-muted hover:text-content-primary border border-border-subtle"
             }`}
             aria-label="Toggle chat history"
           >
-            <History size={16} />
+            <History size={20} />
           </button>
         </div>
       </div>
@@ -290,20 +318,20 @@ export default function Advisor({
           {showHistory && (
             <motion.div
               initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 260, opacity: 1 }}
+              animate={{ width: 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className="border-r border-[#D4CFC7]/30 dark:border-white/10 bg-[#F6F4F0] dark:bg-[#121214] overflow-hidden shrink-0 flex flex-col"
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="border-r border-border-subtle bg-surface-base overflow-hidden shrink-0 flex flex-col relative z-0"
             >
-              <div className="p-3 border-b border-[#D4CFC7]/30 dark:border-white/5 flex items-center justify-between shrink-0">
-                <span className="text-[10px] font-extrabold text-[#8E8E93] uppercase tracking-widest">Recent Queries</span>
-                <button onClick={() => setShowHistory(false)} className="text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white">
-                  <X size={14} />
+              <div className="p-4 border-b border-border-subtle flex items-center justify-between shrink-0">
+                <span className="text-micro font-bold text-content-muted uppercase tracking-widest">Recent Context</span>
+                <button onClick={() => setShowHistory(false)} className="text-content-muted hover:text-content-primary transition-colors">
+                  <X size={18} />
                 </button>
               </div>
-              <div className="flex-1 overflow-y-auto p-2 space-y-1.5 chat-scroll">
+              <div className="flex-1 overflow-y-auto p-3 space-y-2 chat-scroll">
                 {userQueries.length === 0 ? (
-                  <p className="text-[10px] text-[#8E8E93] font-semibold text-center py-6">No queries yet. Start chatting!</p>
+                  <p className="text-caption text-content-muted font-semibold text-center py-8">No analysis history yet.</p>
                 ) : (
                   userQueries.map((q) => (
                     <button
@@ -316,16 +344,16 @@ export default function Advisor({
                           const el = document.getElementById(`msg-${q.id}`);
                           if (el) {
                             el.scrollIntoView({ behavior: "smooth", block: "center" });
-                            el.classList.add("ring-2", "ring-emerald-400/50");
-                            setTimeout(() => el.classList.remove("ring-2", "ring-emerald-400/50"), 2000);
+                            el.classList.add("ring-2", "ring-signal-success/50");
+                            setTimeout(() => el.classList.remove("ring-2", "ring-signal-success/50"), 2000);
                           }
                         }, 300);
                       }}
-                      className="w-full text-left p-2.5 rounded-xl bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7]/30 dark:border-white/5 hover:border-[#2F7D4E]/50 transition-all group"
+                      className="w-full text-left p-4 rounded-2xl bg-surface-elevated border border-border-subtle hover:border-border-strong transition-all duration-normal group"
                     >
-                      <p className="text-[11px] font-semibold text-[#1C1C1E] dark:text-[#F5F5F7] line-clamp-2 leading-relaxed">{q.text}</p>
-                      <p className="text-[9px] text-[#8E8E93] font-medium mt-1 flex items-center gap-1">
-                        <Clock size={9} />
+                      <p className="text-body-sm font-semibold text-content-primary line-clamp-2 leading-relaxed">{q.text}</p>
+                      <p className="text-caption text-content-muted font-bold mt-2 flex items-center gap-1.5 uppercase tracking-wider">
+                        <Clock size={12} />
                         {q.timestamp}
                       </p>
                     </button>
@@ -337,48 +365,48 @@ export default function Advisor({
         </AnimatePresence>
 
         {/* Message history panel */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto py-4 px-4 sm:px-5 space-y-4 pr-1 chat-scroll">
+        <div className="flex-1 flex flex-col overflow-hidden bg-surface-base">
+          <div className="flex-1 overflow-y-auto py-6 px-4 sm:px-8 space-y-6 pr-2 chat-scroll">
             {chatHistory.map((item) => (
               <div
                 key={item.id}
                 id={`msg-${item.id}`}
-                className={`flex gap-3 transition-all rounded-2xl ${item.sender === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex gap-4 transition-all rounded-2xl ${item.sender === "user" ? "justify-end" : "justify-start"}`}
               >
                 {item.sender === "bot" && (
-                  <div className="w-8 h-8 rounded-xl bg-[#EDE8E0] dark:bg-black/20 shrink-0 flex items-center justify-center">
-                    <Bot size={16} className="text-[#2F7D4E]" />
+                  <div className="w-10 h-10 rounded-xl bg-surface-elevated border border-border-subtle shrink-0 flex items-center justify-center">
+                    <Bot size={20} className="text-signal-success" />
                   </div>
                 )}
 
-                <div className={`max-w-[85%] space-y-1.5`}>
-                  <div className={`p-3.5 rounded-2.5xl text-xs font-semibold leading-relaxed ${
+                <div className={`max-w-[85%] space-y-2`}>
+                  <div className={`p-5 rounded-3xl text-body-md font-medium leading-relaxed shadow-sm ${
                     item.sender === "user"
-                      ? "bg-[#2F7D4E] text-white rounded-tr-sm"
-                      : "bg-[#F6F4F0] dark:bg-[#121214] text-[#1C1C1E] dark:text-[#F5F5F7] rounded-tl-sm border border-[#D4CFC7]/20"
+                      ? "bg-content-primary text-surface-base rounded-tr-sm"
+                      : "bg-surface-elevated text-content-primary rounded-tl-sm border border-border-subtle"
                   }`}>
                     <p className="select-text whitespace-pre-wrap">{item.text}</p>
                     
                     {/* Dynamically parsed action cards */}
                     {item.actions && item.actions.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-3 select-none">
+                      <div className="flex flex-wrap gap-3 mt-4 select-none">
                         {item.actions.map((act, idy) => (
                           <button
                             key={idy}
                             id={`action-chip-btn-${idy}`}
                             onClick={() => executeActionChip(act.action)}
-                            className="px-3 py-2 text-[10px] font-extrabold rounded-lg bg-white hover:bg-neutral-50 text-[#2F7D4E] dark:bg-[#1C1C1E] dark:hover:bg-[#252528] dark:text-emerald-400 border border-[#D4CFC7]/30 transition-all cursor-pointer flex items-center gap-1 shadow-xs"
+                            className="px-4 py-2.5 text-caption font-bold rounded-xl bg-surface-base hover:bg-border-subtle text-signal-success border border-border-subtle transition-colors cursor-pointer flex items-center gap-2 shadow-sm"
                           >
                             <span>{act.label}</span>
-                            <ArrowRight size={10} />
+                            <ArrowRight size={14} />
                           </button>
                         ))}
                       </div>
                     )}
                   </div>
 
-                  <div className={`flex items-center gap-2 text-[9px] text-[#8E8E93] font-semibold ${
-                    item.sender === "user" ? "justify-end" : "justify-start pl-1"
+                  <div className={`flex items-center gap-3 text-micro text-content-muted font-bold uppercase tracking-wider ${
+                    item.sender === "user" ? "justify-end pr-2" : "justify-start pl-2"
                   }`}>
                     <span>{item.timestamp}</span>
                     {item.sender === "bot" && (
@@ -387,9 +415,10 @@ export default function Advisor({
                         <button
                           id={`speak-msg-btn-${item.id}`}
                           onClick={() => speakText(item.text)}
-                          className="hover:text-emerald-600 dark:hover:text-emerald-400 font-bold"
+                          className="hover:text-signal-success transition-colors flex items-center gap-1"
                         >
-                          Listen Out Loud
+                          <Volume2 size={12} />
+                          Listen
                         </button>
                       </>
                     )}
@@ -399,13 +428,13 @@ export default function Advisor({
             ))}
 
             {loading && (
-              <div className="flex gap-3 justify-start">
-                <div className="w-8 h-8 rounded-xl bg-[#EDE8E0] dark:bg-black/20 flex items-center justify-center shrink-0">
-                  <Bot size={16} className="text-[#2F7D4E] animate-pulse" />
+              <div className="flex gap-4 justify-start">
+                <div className="w-10 h-10 rounded-xl bg-surface-elevated border border-border-subtle shrink-0 flex items-center justify-center">
+                  <Bot size={20} className="text-signal-success animate-pulse" />
                 </div>
-                <div className="p-3.5 bg-[#F6F4F0] dark:bg-[#121214] rounded-2.5xl rounded-tl-sm border border-[#D4CFC7]/10 flex items-center gap-2">
-                  <RefreshCw size={12} className="animate-spin text-[#8E8E93]" />
-                  <p className="text-[11px] font-extrabold text-[#8E8E93] uppercase animate-pulse">Kisan AI generating response...</p>
+                <div className="p-4 bg-surface-elevated rounded-3xl rounded-tl-sm border border-border-subtle flex items-center gap-3 shadow-sm">
+                  <RefreshCw size={16} className="animate-spin text-content-muted" />
+                  <p className="text-caption font-bold text-content-muted tracking-widest uppercase animate-pulse">Synthesizing intelligence...</p>
                 </div>
               </div>
             )}
@@ -420,23 +449,49 @@ export default function Advisor({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                className="mx-4 mb-2 bg-rose-50 dark:bg-rose-950/20 border border-rose-200/50 p-3.5 rounded-2xl flex items-center justify-between gap-4 z-10"
+                className="mx-6 mb-4 bg-signal-critical/10 border border-signal-critical/30 p-4 rounded-2xl flex items-center justify-between gap-4 z-10 material-glass"
               >
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping shrink-0" />
-                  <p className="text-xs font-bold text-rose-800 dark:text-rose-400">Listening to farmer's speech...</p>
+                <div className="flex items-center gap-3">
+                  <span className="w-2.5 h-2.5 rounded-full bg-signal-critical animate-ping shrink-0 shadow-[0_0_8px_var(--color-signal-critical)]" />
+                  <p className="text-body-sm font-bold text-signal-critical tracking-wide">Capturing diagnostic audio...</p>
                 </div>
 
                 {/* Simulated sound waves visualizer */}
-                <div className="flex items-end gap-1 h-6 w-16" aria-hidden="true">
-                  <motion.div className="bg-rose-500 w-1 rounded-full flex-1" style={{ height: "40%" }} animate={{ height: ["40%", "90%", "40%"] }} transition={{ repeat: Infinity, duration: 0.6 }} />
-                  <motion.div className="bg-rose-500 w-1 rounded-full flex-1" style={{ height: "70%" }} animate={{ height: ["70%", "30%", "70%"] }} transition={{ repeat: Infinity, duration: 0.4 }} />
-                  <motion.div className="bg-rose-500 w-1 rounded-full flex-1" style={{ height: "90%" }} animate={{ height: ["90%", "50%", "90%"] }} transition={{ repeat: Infinity, duration: 0.5 }} />
-                  <motion.div className="bg-rose-500 w-1 rounded-full flex-1" style={{ height: "50%" }} animate={{ height: ["50%", "80%", "50%"] }} transition={{ repeat: Infinity, duration: 0.3 }} />
+                <div className="flex items-end gap-1.5 h-8 w-20" aria-hidden="true">
+                  <motion.div className="bg-signal-critical w-1.5 rounded-full flex-1" style={{ height: "40%" }} animate={{ height: ["40%", "90%", "40%"] }} transition={{ repeat: Infinity, duration: 0.6 }} />
+                  <motion.div className="bg-signal-critical w-1.5 rounded-full flex-1" style={{ height: "70%" }} animate={{ height: ["70%", "30%", "70%"] }} transition={{ repeat: Infinity, duration: 0.4 }} />
+                  <motion.div className="bg-signal-critical w-1.5 rounded-full flex-1" style={{ height: "90%" }} animate={{ height: ["90%", "50%", "90%"] }} transition={{ repeat: Infinity, duration: 0.5 }} />
+                  <motion.div className="bg-signal-critical w-1.5 rounded-full flex-1" style={{ height: "50%" }} animate={{ height: ["50%", "80%", "50%"] }} transition={{ repeat: Infinity, duration: 0.3 }} />
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Quick Context Chips */}
+          <div className="px-6 pb-3 pt-2 flex gap-2 overflow-x-auto hide-scrollbar z-10 relative bg-surface-base shrink-0">
+            {(contextEntryTab === "detect" 
+              ? ["Discuss Latest Scan", "Explain Fungicide Application"]
+              : contextEntryTab === "dashboard"
+              ? ["Explain Farm Health Score", "Today's Weather Priorities"]
+              : contextEntryTab === "activity"
+              ? ["Analyze Soil Moisture Trends", "Review Irrigation Schedule"]
+              : ["What is my farm health?", "Check current mandi prices"]
+            ).map((chip, idx) => (
+              <button
+                key={idx}
+                onClick={() => setInputMsg(chip)}
+                className="whitespace-nowrap px-4 py-2 bg-surface-elevated border border-border-subtle rounded-full text-caption font-bold text-content-secondary hover:text-content-primary hover:border-border-strong transition-colors cursor-pointer"
+              >
+                {chip}
+              </button>
+            ))}
+          </div>
+
+          <div className="bg-surface-elevated border-t border-border-subtle p-3 px-6 flex items-center gap-5 z-10 relative select-none shrink-0">
+            <button type="button" onClick={() => handleAttachmentClick("Camera")} className="text-content-muted hover:text-content-primary transition-colors flex items-center gap-2 text-caption font-bold cursor-pointer"><Camera size={18}/> Camera</button>
+            <button type="button" onClick={() => handleAttachmentClick("Gallery")} className="text-content-muted hover:text-content-primary transition-colors flex items-center gap-2 text-caption font-bold cursor-pointer"><ImageIcon size={18}/> Gallery</button>
+            <button type="button" onClick={() => handleAttachmentClick("Files")} className="text-content-muted hover:text-content-primary transition-colors flex items-center gap-2 text-caption font-bold cursor-pointer"><FileText size={18}/> Files</button>
+          </div>
 
           {/* Chat workspace footer area */}
           <form
@@ -444,21 +499,21 @@ export default function Advisor({
               e.preventDefault();
               handleSend(inputMsg);
             }}
-            className="flex items-center gap-2 border-t border-[#D4CFC7]/30 dark:border-white/10 p-4 sm:px-5 select-none shrink-0"
+            className="flex items-center gap-3 border-t border-border-subtle p-5 sm:px-6 select-none shrink-0 bg-surface-elevated relative z-10"
           >
             {/* Toggle MIC */}
             <button
               id="speech-recognition-btn"
               type="button"
               onClick={toggleSpeechRecognition}
-              className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 transition-all cursor-pointer ${
+              className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 transition-all duration-normal cursor-pointer shadow-sm ${
                 recognizing 
-                  ? "bg-rose-600 text-white" 
-                  : "bg-[#F6F4F0] dark:bg-[#121214] text-[#8E8E93] hover:text-[#1C1C1E] border border-[#D4CFC7]/30"
+                  ? "bg-signal-critical text-surface-base" 
+                  : "bg-surface-base text-content-muted hover:text-content-primary border border-border-subtle hover:border-border-strong"
               }`}
               aria-label="Activate voice diagnostic speech input"
             >
-              {recognizing ? <MicOff size={18} /> : <Mic size={18} />}
+              {recognizing ? <MicOff size={22} /> : <Mic size={22} />}
             </button>
 
             <input
@@ -467,15 +522,16 @@ export default function Advisor({
               placeholder="Ask about fertilizer ratios, mildew symptoms, mandi rates..."
               value={inputMsg}
               onChange={(e) => setInputMsg(e.target.value)}
-              className="flex-1 h-11 bg-[#F6F4F0] dark:bg-[#121214] border border-[#D4CFC7] dark:border-white/10 rounded-2xl px-4 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-[#2F7D4E] text-[#1C1C1E] dark:text-[#F5F5F7]"
+              className="flex-1 h-14 bg-surface-base border border-border-subtle rounded-2xl px-5 text-body-md font-medium focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success text-content-primary transition-colors placeholder-content-muted"
             />
 
             <button
               id="send-chat-submit-btn"
               type="submit"
-              className="w-11 h-11 bg-[#2F7D4E] hover:bg-[#256B3F] text-white rounded-2xl shrink-0 transition-colors flex items-center justify-center cursor-pointer shadow-xs font-bold"
+              disabled={!inputMsg.trim()}
+              className="w-14 h-14 bg-content-primary hover:opacity-90 disabled:opacity-50 text-surface-base rounded-2xl shrink-0 transition-opacity flex items-center justify-center cursor-pointer shadow-md"
             >
-              <Send size={15} />
+              <Send size={20} />
             </button>
           </form>
         </div>

@@ -142,25 +142,27 @@ export default function Marketplace({
   return (
     <div className="space-y-6 select-none font-sans relative">
       {/* 🧭 Horizontal segment switches */}
-      <div className="flex border-b border-[#D4CFC7] dark:border-[#2C2C2E] select-none gap-4">
+      <div className="flex border-b border-border-subtle select-none gap-6 overflow-x-auto no-scrollbar">
         {[
           { id: "rates", label: t.liveMandiRates, icon: TrendingUp },
           { id: "buy", label: t.buyInputs, icon: ShoppingBag },
           { id: "sell", label: t.sellProduce, icon: Tag }
         ].map((tab) => (
-          <button
+          <motion.button
             key={tab.id}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             id={`mkt-segment-btn-${tab.id}`}
             onClick={() => setActiveSegment(tab.id as any)}
-            className={`pb-3 text-xs sm:text-sm font-extrabold flex items-center gap-1.5 border-b-2 transition-all cursor-pointer ${
+            className={`pb-4 text-body-sm font-bold flex items-center gap-2 border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
               activeSegment === tab.id
-                ? "border-[#2F7D4E] text-[#2F7D4E] dark:text-[#4ADE80]"
-                : "border-transparent text-[#5A5A5F] dark:text-[#A1A1A6] hover:text-[#1C1C1E]"
+                ? "border-content-primary text-content-primary"
+                : "border-transparent text-content-muted hover:text-content-primary"
             }`}
           >
-            <tab.icon size={16} />
+            <tab.icon size={18} />
             <span>{tab.label}</span>
-          </button>
+          </motion.button>
         ))}
       </div>
 
@@ -175,15 +177,15 @@ export default function Marketplace({
             className="space-y-4"
           >
             {/* Rates State drop control */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl p-4 shadow-xs">
-              <div className="flex items-center gap-1.5">
-                <Globe size={18} className="text-[#2F7D4E]" />
-                <span className="text-xs font-bold text-[#1C1C1E] dark:text-[#F5F5F7]">{t.selectState}:</span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 material-elevated border border-border-subtle rounded-3xl p-5 shadow-sm">
+              <div className="flex items-center gap-2">
+                <Globe size={20} className="text-signal-success" />
+                <span className="text-body-sm font-bold text-content-primary">{t.selectState}:</span>
                 <select
                   id="mandi-state-select"
                   value={mandiState}
                   onChange={(e) => setMandiState(e.target.value)}
-                  className="bg-[#F6F4F0] dark:bg-[#2C2C2E] text-xs font-bold border border-[#D4CFC7] dark:border-white/10 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#2F7D4E]"
+                  className="bg-surface-base text-body-sm font-bold border border-border-subtle rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-signal-success/30 shadow-inner"
                 >
                   <option value="Maharashtra">Maharashtra</option>
                   <option value="Punjab">Punjab</option>
@@ -192,56 +194,56 @@ export default function Marketplace({
                 </select>
               </div>
 
-              <span className="text-[10px] font-extrabold text-[#8E8E93] uppercase tracking-widest">Powered by Agmarknet portal sync</span>
+              <span className="text-micro font-bold text-content-muted uppercase tracking-widest hidden sm:block">Powered by Agmarknet portal sync</span>
             </div>
 
             {/* Rates Grid */}
             {ratesLoading ? (
-              <div className="text-center py-12 bg-white dark:bg-[#1C1C1E] rounded-3xl border border-[#D4CFC7] dark:border-[#2C2C2E]">
-                <div className="w-8 h-8 border-4 border-[#2F7D4E] border-t-transparent rounded-full animate-spin mx-auto pb-2" />
-                <p className="text-xs text-[#8E8E93] font-bold mt-2">Loading live market intelligence rates...</p>
+              <div className="text-center py-16 material-elevated rounded-3xl border border-border-subtle shadow-sm">
+                <div className="w-10 h-10 border-4 border-content-primary border-t-transparent rounded-full animate-spin mx-auto pb-2" />
+                <p className="text-body-sm text-content-muted font-bold mt-4">Loading live market intelligence rates...</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {mandiRates.map((rate, idx) => {
                   const priceDiff = rate.price - rate.prevPrice;
                   const isUp = priceDiff >= 0;
                   return (
                     <div
                       key={idx}
-                      className="bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl p-5 shadow-xs flex justify-between gap-4"
+                      className="material-elevated border border-border-subtle rounded-3xl p-6 shadow-sm flex justify-between gap-5 hover:border-border-strong transition-colors duration-normal"
                     >
-                      <div className="space-y-3 flex-1">
+                      <div className="space-y-4 flex-1">
                         <div>
-                          <span className="text-[10px] font-extrabold text-orange-700 bg-orange-50 dark:bg-orange-950/20 px-2 py-0.5 rounded-sm uppercase tracking-wider">{rate.arrivals}</span>
-                          <h4 className="text-base font-extrabold text-[#1C1C1E] dark:text-[#F5F5F7] mt-1">{rate.crop}</h4>
+                          <span className="text-micro font-bold text-signal-warning bg-signal-warning/10 px-2.5 py-1 rounded-md uppercase tracking-widest">{rate.arrivals}</span>
+                          <h4 className="text-body-lg font-bold text-content-primary mt-2">{rate.crop}</h4>
                         </div>
 
                         {/* Current Price and indicator */}
                         <div className="flex items-baseline gap-2">
-                          <span className="text-2xl font-extrabold font-mono text-[#1C1C1E] dark:text-[#F5F5F7]">₹{rate.price}</span>
-                          <span className="text-[10px] font-semibold text-[#8E8E93]">per {rate.unit}</span>
+                          <span className="text-title font-bold font-mono text-content-primary tracking-tight">₹{rate.price}</span>
+                          <span className="text-caption font-semibold text-content-muted">per {rate.unit}</span>
                           
-                          <span className={`text-xs font-bold flex items-center ${isUp ? "text-emerald-600" : "text-rose-600"}`}>
+                          <span className={`text-body-sm font-bold flex items-center ml-2 ${isUp ? "text-signal-success" : "text-signal-critical"}`}>
                             {isUp ? "▲" : "▼"} ₹{Math.abs(priceDiff)}
                           </span>
                         </div>
 
-                        <div className="bg-[#E8F5EC] dark:bg-[#153B22]/10 p-3 rounded-2xl border border-[#2F7D4E]/20 space-y-0.5">
-                          <span className="text-[10px] font-extrabold text-[#2F7D4E] dark:text-[#4ADE80] uppercase tracking-wide flex items-center gap-1">
-                            <Sparkles size={11} /> {t.suggestedAiPrice}
+                        <div className="bg-signal-success/5 p-4 rounded-2xl border border-signal-success/20 space-y-1">
+                          <span className="text-micro font-bold text-signal-success uppercase tracking-widest flex items-center gap-1.5">
+                            <Sparkles size={14} /> {t.suggestedAiPrice}
                           </span>
-                          <p className="text-xs font-bold text-[#1C1C1E] dark:text-[#F5F5F7]">₹{rate.aiSuggestedRange.min} - ₹{rate.aiSuggestedRange.max}</p>
-                          <p className="text-[9px] text-[#8E8E93] font-medium leading-tight">Optimized for A-Grade moisture index</p>
+                          <p className="text-body-sm font-bold text-content-primary font-mono mt-1">₹{rate.aiSuggestedRange.min} - ₹{rate.aiSuggestedRange.max}</p>
+                          <p className="text-micro text-content-muted font-medium mt-1">Optimized for A-Grade moisture index</p>
                         </div>
                       </div>
 
                       <div className="flex flex-col justify-between items-end text-right">
                         <div>
-                          <p className="text-[10px] text-[#8E8E93] font-bold">Mandi Grade</p>
-                          <p className="text-sm font-extrabold text-[#2F7D4E] dark:text-[#4ADE80] font-mono">{rate.quality}-Grade</p>
+                          <p className="text-micro text-content-muted font-bold tracking-wide">Mandi Grade</p>
+                          <p className="text-body-sm font-bold text-signal-success font-mono mt-0.5">{rate.quality}-Grade</p>
                         </div>
-                        <span className="text-[9px] font-semibold text-[#8E8E93] leading-none">eNAM Live</span>
+                        <span className="text-micro font-semibold text-content-muted mt-4 inline-block">eNAM Live</span>
                       </div>
                     </div>
                   );
@@ -261,75 +263,79 @@ export default function Marketplace({
             className="space-y-4"
           >
             {/* Subsidy Info Callout Banner */}
-            <div className="bg-emerald-50 dark:bg-[#153B22]/15 border border-[#2F7D4E]/30 p-4 rounded-3xl flex items-center justify-between gap-4">
+            <div className="bg-signal-success/10 border border-signal-success/20 p-5 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-1">
-                <h4 className="text-xs font-bold text-[#2F7D4E] dark:text-[#4ADE80] flex items-center gap-1">
-                  <Flame size={14} className="animate-pulse" />
+                <h4 className="text-body-sm font-bold text-signal-success flex items-center gap-2">
+                  <Flame size={18} className="animate-pulse" />
                   PM-Kisan Input Subsidies Activated
                 </h4>
-                <p className="text-xs text-[#5A5A5F] dark:text-[#A1A1A6] font-semibold">
+                <p className="text-caption text-content-muted font-medium mt-1">
                   Govt. subsidized inputs listed below are verified under PM-KVK direct-benefit guidelines.
                 </p>
               </div>
 
               {/* Cart Drawer activator widget */}
-              <button
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 id="cart-toggle-btn"
                 onClick={() => setCartOpen(true)}
-                className="relative bg-[#2F7D4E] text-white flex items-center gap-2 px-3.5 py-2.5 rounded-2xl text-xs font-extrabold focus:outline-none cursor-pointer"
+                className="relative bg-content-primary hover:opacity-90 text-surface-base flex items-center gap-2 px-5 py-3 rounded-xl text-body-sm font-bold focus:outline-none cursor-pointer shadow-sm transition-opacity shrink-0"
               >
-                <ShoppingBag size={14} />
+                <ShoppingBag size={16} />
                 <span>{cart.length} Products</span>
                 {cart.length > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-rose-600 text-white w-4 h-4 text-[9px] font-bold rounded-full flex items-center justify-center animate-bounce">
+                  <span className="absolute -top-2 -right-2 bg-signal-critical text-surface-base w-5 h-5 text-micro font-bold rounded-full flex items-center justify-center animate-bounce shadow-md">
                     {cart.reduce((a, b) => a + b.quantity, 0)}
                   </span>
                 )}
-              </button>
+              </motion.button>
             </div>
 
             {/* Products catalog list with subsidy percentages */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {products.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl p-4 shadow-sm flex flex-col justify-between hover:border-[#2F7D4E]/40 transition-colors"
+                  className="material-elevated border border-border-subtle rounded-3xl p-5 shadow-sm flex flex-col justify-between hover:border-signal-success/40 transition-colors duration-normal group"
                 >
                   <div className="space-y-3">
-                    <div className="relative h-32 rounded-2xl overflow-hidden bg-[#F6F4F0]">
-                      <img src={item.image} alt={item.name} className="w-full h-full object-cover pointer-events-none" />
+                    <div className="relative h-36 rounded-2xl overflow-hidden bg-surface-base">
+                      <img src={item.image} alt={item.name} className="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-slow" />
                       {item.subsidyPercent && (
-                        <span className="absolute top-2 left-2 bg-orange-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-md">
+                        <span className="absolute top-3 left-3 bg-signal-warning text-surface-base text-micro font-bold px-2.5 py-1 rounded-md shadow-sm">
                           {t.governmentSubsidy} {item.subsidyPercent}%
                         </span>
                       )}
                       {item.isVerified && (
-                        <span className="absolute bottom-2 right-2 bg-emerald-600 text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-sm shadow-xs select-none">Govt. Certified</span>
+                        <span className="absolute bottom-3 right-3 bg-signal-success text-surface-base text-micro font-bold px-2 py-1 rounded-md shadow-sm select-none">Govt. Certified</span>
                       )}
                     </div>
 
-                    <div>
-                      <span className="text-[9px] font-extrabold text-[#8E8E93] uppercase tracking-widest">{item.category}</span>
-                      <h4 className="text-xs font-bold text-[#1C1C1E] dark:text-[#F5F5F7] mt-0.5 line-clamp-1">{item.name}</h4>
-                      <p className="text-[10px] text-[#8E8E93] font-semibold mt-0.5">Seller: {item.seller} · Nashik Depot</p>
+                    <div className="pt-2">
+                      <span className="text-micro font-bold text-content-muted uppercase tracking-widest block mb-1">{item.category}</span>
+                      <h4 className="text-body-sm font-bold text-content-primary line-clamp-1">{item.name}</h4>
+                      <p className="text-caption text-content-muted font-medium mt-1">Seller: {item.seller} · Nashik Depot</p>
                     </div>
 
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-lg font-bold font-mono text-[#10B981] dark:text-emerald-400">₹{item.price}</span>
+                    <div className="flex items-baseline gap-2 mt-1">
+                      <span className="text-title font-bold font-mono text-signal-success tracking-tight">₹{item.price}</span>
                       {item.originalPrice && (
-                        <span className="text-xs text-[#8E8E93] line-through font-mono">₹{item.originalPrice}</span>
+                        <span className="text-body-sm text-content-muted line-through font-mono">₹{item.originalPrice}</span>
                       )}
                     </div>
                   </div>
 
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     id={`add-to-cart-btn-${item.id}`}
                     onClick={() => addToCart(item)}
-                    className="w-full h-10 mt-3 bg-[#EDE8E0] hover:bg-[#D4CFC7] dark:bg-[#2C2C2E] dark:hover:bg-[#3A3A3C] text-[#1C1C1E] dark:text-white text-xs font-extrabold rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                    className="w-full h-12 mt-4 bg-surface-base hover:bg-border-subtle border border-border-subtle hover:border-border-strong text-content-primary text-body-sm font-bold rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2"
                   >
-                    <ShoppingBag size={13} />
+                    <ShoppingBag size={16} />
                     <span>{t.buyNow}</span>
-                  </button>
+                  </motion.button>
                 </div>
               ))}
             </div>
@@ -346,18 +352,18 @@ export default function Marketplace({
             className="grid grid-cols-1 lg:grid-cols-12 gap-6"
           >
             {/* Listing Creator Form - 5 cols */}
-            <form onSubmit={handleCreateListing} className="lg:col-span-5 bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl p-5 shadow-xs space-y-4">
-              <h3 className="text-sm font-extrabold text-[#1C1C1E] dark:text-[#F5F5F7] uppercase tracking-wider">{t.sellProduce}</h3>
+            <form onSubmit={handleCreateListing} className="lg:col-span-5 material-elevated border border-border-subtle rounded-3xl p-6 shadow-sm space-y-6">
+              <h3 className="text-body-md font-bold text-content-primary uppercase tracking-widest border-b border-border-subtle pb-3">{t.sellProduce}</h3>
 
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {/* Crop selector */}
-                <div className="space-y-1">
-                  <label className="text-[11px] font-extrabold text-[#8E8E93] uppercase tracking-wider" htmlFor="crop-sell-select">{t.cropToSell}</label>
+                <div className="space-y-1.5">
+                  <label className="text-micro font-bold text-content-muted uppercase tracking-widest" htmlFor="crop-sell-select">{t.cropToSell}</label>
                   <select
                     id="crop-sell-select"
                     value={selectedCrop}
                     onChange={(e) => setSelectedCrop(e.target.value)}
-                    className="w-full h-11 bg-[#F6F4F0] dark:bg-[#2C2C2E] text-xs font-bold border border-[#D4CFC7] dark:border-white/10 rounded-xl px-3 focus:outline-none focus:ring-1 focus:ring-[#2F7D4E]"
+                    className="w-full h-12 bg-surface-base text-body-sm font-medium border border-border-subtle rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-signal-success/30 transition-colors shadow-sm"
                   >
                     <option value="Cotton">Cotton / कपास</option>
                     <option value="Soybean">Soybean / सोयाबीन</option>
@@ -369,8 +375,8 @@ export default function Marketplace({
                 </div>
 
                 {/* Weight Input */}
-                <div className="space-y-1">
-                  <label className="text-[11px] font-extrabold text-[#8E8E93] uppercase tracking-wider" htmlFor="weight-input">{t.addWeight}</label>
+                <div className="space-y-1.5">
+                  <label className="text-micro font-bold text-content-muted uppercase tracking-widest" htmlFor="weight-input">{t.addWeight}</label>
                   <input
                     id="weight-input"
                     type="number"
@@ -378,15 +384,15 @@ export default function Marketplace({
                     placeholder="e.g. 25"
                     value={commodityWeight}
                     onChange={(e) => setCommodityWeight(e.target.value.replace(/\D/g, ""))}
-                    className="w-full h-11 bg-[#F6F4F0] dark:bg-[#2C2C2E] text-xs font-bold border border-[#D4CFC7] dark:border-white/10 rounded-xl px-3 focus:outline-none focus:ring-1 focus:ring-[#2F7D4E]"
+                    className="w-full h-12 bg-surface-base text-body-sm font-medium border border-border-subtle rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-signal-success/30 transition-colors shadow-sm"
                   />
                 </div>
 
                 {/* Asking Target Price Input with currency fix (pl-12) */}
-                <div className="space-y-1">
-                  <label className="text-[11px] font-extrabold text-[#8E8E93] uppercase tracking-wider" htmlFor="price-input">{t.askingPrice}</label>
+                <div className="space-y-1.5">
+                  <label className="text-micro font-bold text-content-muted uppercase tracking-widest" htmlFor="price-input">{t.askingPrice}</label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-[#8E8E93]">₹</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-body-sm font-bold text-content-muted">₹</span>
                     <input
                       id="price-input"
                       type="number"
@@ -394,105 +400,114 @@ export default function Marketplace({
                       placeholder="e.g. 6800"
                       value={askingPrice}
                       onChange={(e) => setAskingPrice(e.target.value.replace(/\D/g, ""))}
-                      className="w-full h-11 bg-[#F6F4F0] dark:bg-[#2C2C2E] border border-[#D4CFC7] dark:border-white/10 rounded-xl pl-12 pr-4 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-[#2F7D4E]"
+                      className="w-full h-12 bg-surface-base border border-border-subtle rounded-xl pl-10 pr-4 text-body-sm font-bold focus:outline-none focus:ring-2 focus:ring-signal-success/30 transition-colors shadow-sm"
                     />
                   </div>
-                  <p className="text-[10px] text-[#8E8E93] font-semibold mt-0.5">{t.fixedPaddingFix}</p>
+                  <p className="text-caption text-content-muted font-semibold mt-1">{t.fixedPaddingFix}</p>
                 </div>
 
                 {/* Quality options */}
-                <div className="space-y-1">
-                  <label className="text-[11px] font-extrabold text-[#8E8E93] uppercase tracking-wider">Quality Grade (Moisture verified)</label>
-                  <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-2">
+                  <label className="text-micro font-bold text-content-muted uppercase tracking-widest">Quality Grade (Moisture verified)</label>
+                  <div className="grid grid-cols-3 gap-3">
                     {["A", "B", "C"].map((grade) => (
-                      <button
+                      <motion.button
                         key={grade}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         id={`grade-btn-${grade}`}
                         type="button"
                         onClick={() => setSelectedQuality(grade as any)}
-                        className={`py-2 text-xs font-bold rounded-xl border ${
+                        className={`py-2.5 text-body-sm font-bold rounded-xl border transition-colors shadow-sm cursor-pointer ${
                           selectedQuality === grade
-                            ? "bg-[#E8F5EC] border-[#2F7D4E] text-[#2F7D4E]"
-                            : "bg-[#F6F4F0] border-transparent dark:bg-[#2C2C2E] text-[#1C1C1E] dark:text-[#F5F5F7]"
+                            ? "bg-signal-success/10 border-signal-success text-signal-success"
+                            : "bg-surface-base border-border-subtle hover:border-border-strong text-content-primary"
                         }`}
                       >
                         {grade}-Grade
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
                 </div>
 
                 {/* AI pricing helper box */}
                 {cropPriceFactor && (
-                  <div className="bg-[#E8F5EC] dark:bg-[#153B22]/10 p-3 rounded-2xl border border-[#2F7D4E]/20 space-y-1 select-none">
-                    <div className="flex items-center gap-1 text-[10px] font-extrabold text-[#2F7D4E] dark:text-[#4ADE80] uppercase">
-                      <Sparkles size={12} /> Target suggestions
+                  <div className="bg-signal-success/5 p-4 rounded-2xl border border-signal-success/20 space-y-2 select-none">
+                    <div className="flex items-center gap-1.5 text-micro font-bold text-signal-success uppercase tracking-widest">
+                      <Sparkles size={14} /> Target suggestions
                     </div>
-                    <p className="text-xs font-semibold text-[#5A5A5F] dark:text-[#A1A1A6]">
-                      Current Mandi: <span className="font-bold text-[#1C1C1E] dark:text-white">₹{cropPriceFactor.price}/qtl</span>
+                    <p className="text-caption font-semibold text-content-muted">
+                      Current Mandi: <span className="font-bold text-content-primary font-mono">₹{cropPriceFactor.price}/qtl</span>
                     </p>
-                    <p className="text-xs font-semibold text-[#5A5A5F] dark:text-[#A1A1A6]">
-                      FPO AI target recommendation: <span className="font-bold text-emerald-600">₹{cropPriceFactor.aiSuggestedRange.min} - ₹{cropPriceFactor.aiSuggestedRange.max}</span>
+                    <p className="text-caption font-semibold text-content-muted">
+                      FPO AI target recommendation: <span className="font-bold text-signal-success font-mono">₹{cropPriceFactor.aiSuggestedRange.min} - ₹{cropPriceFactor.aiSuggestedRange.max}</span>
                     </p>
                   </div>
                 )}
 
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   id="list-produce-btn"
                   type="submit"
-                  className="w-full h-11 bg-[#2F7D4E] hover:bg-[#256B3F] text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
+                  className="w-full h-14 bg-content-primary hover:opacity-90 text-surface-base font-bold text-body-md rounded-2xl shadow-md transition-opacity cursor-pointer flex items-center justify-center gap-2 mt-2"
                 >
                   {t.listProduceBtn}
-                </button>
+                </motion.button>
               </div>
 
               {listingSuccess && (
-                <div className="text-center p-2.5 bg-emerald-50 rounded-xl border border-emerald-200">
-                  <p className="text-xs text-emerald-800 font-bold">✓ Listing published live to local buyers and FPOs!</p>
+                <div className="text-center p-3 bg-signal-success/10 rounded-xl border border-signal-success/20 mt-4">
+                  <p className="text-caption text-signal-success font-bold tracking-wide">✓ Listing published live to local buyers and FPOs!</p>
                 </div>
               )}
             </form>
 
             {/* Active Listings list - 7 cols */}
-            <div className="lg:col-span-7 bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl p-5 shadow-xs space-y-4">
-              <h3 className="text-sm font-extrabold text-[#1C1C1E] dark:text-[#F5F5F7] uppercase tracking-wider">{t.myActiveListings}</h3>
+            <div className="lg:col-span-7 material-elevated border border-border-subtle rounded-3xl p-6 shadow-sm space-y-5">
+              <h3 className="text-body-md font-bold text-content-primary uppercase tracking-widest border-b border-border-subtle pb-3">{t.myActiveListings}</h3>
 
-              <div className="space-y-3 max-h-[360px] overflow-y-auto">
+              <div className="space-y-4 max-h-[420px] overflow-y-auto no-scrollbar">
                 {userListings.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Store className="text-[#8E8E93] mx-auto pb-2" size={28} />
-                    <p className="text-xs text-[#8E8E93] font-bold">No active produce listings found.</p>
+                  <div className="text-center py-16 flex flex-col items-center justify-center min-h-[300px]">
+                    <div className="w-20 h-20 rounded-full bg-surface-base border border-border-subtle flex items-center justify-center mb-4 shadow-sm">
+                      <Store className="text-content-muted" size={28} />
+                    </div>
+                    <p className="text-body-md font-bold text-content-primary mb-1">No Active Listings</p>
+                    <p className="text-body-sm text-content-secondary max-w-xs mx-auto leading-relaxed">You haven't listed any produce yet. Use the FPO AI target recommendations to list your crops.</p>
                   </div>
                 ) : (
                   userListings.map((listing) => (
                     <div
                       key={listing.id}
-                      className="p-4 bg-[#F6F4F0]/60 dark:bg-[#121214] border border-[#D4CFC7]/40 dark:border-white/5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs"
+                      className="p-5 bg-surface-base border border-border-subtle rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm hover:border-border-strong transition-colors duration-normal"
                     >
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-extrabold text-[#2F7D4E] bg-[#E8F5EC] dark:bg-[#153B22]/10 px-2 py-0.5 rounded-sm uppercase tracking-wide">
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-micro font-bold text-signal-success bg-signal-success/10 px-2.5 py-1 rounded-md uppercase tracking-widest">
                             {listing.crop}
                           </span>
-                          <span className="text-[10px] font-bold text-[#8E8E93]">{listing.timestamp}</span>
+                          <span className="text-caption font-bold text-content-muted">{listing.timestamp}</span>
                         </div>
-                        <h4 className="text-sm font-bold text-[#1C1C1E] dark:text-[#F5F5F7]">{listing.weight} Quintals · {listing.quality}-Grade</h4>
-                        <p className="text-xs font-extrabold text-emerald-600">Asking target: ₹{listing.price}/qtl</p>
+                        <h4 className="text-body-sm font-bold text-content-primary mt-2">{listing.weight} Quintals · {listing.quality}-Grade</h4>
+                        <p className="text-body-sm font-bold text-signal-success font-mono mt-1">Asking target: ₹{listing.price}/qtl</p>
                       </div>
 
-                      <div className="flex items-center gap-2">
-                        <button
+                      <div className="flex items-center gap-2 mt-3 sm:mt-0">
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
                           id={`whatsapp-btn-${listing.id}`}
                           onClick={() => {
                             // Mock sharing details
                             navigator.clipboard.writeText(`Selling cotton: ${listing.weight} Qtl, target ${listing.price}/qtl. Location: ${listing.location}`);
                             alert("Listing copied to clipboard! Ready to share directly via WhatsApp.");
                           }}
-                          className="flex items-center gap-1 px-3 py-2 border border-[#D4CFC7] dark:border-white/10 rounded-xl text-xs font-bold text-[#8E8E93] hover:text-[#1C1C1E] dark:hover:text-white transition-all cursor-pointer"
+                          className="flex items-center gap-2 px-4 py-2 border border-border-subtle hover:border-border-strong rounded-xl text-body-sm font-bold text-content-muted hover:text-content-primary transition-colors cursor-pointer shadow-sm w-full sm:w-auto justify-center"
                         >
-                          <Share2 size={13} />
+                          <Share2 size={16} />
                           <span>{t.whatsappShare}</span>
-                        </button>
+                        </motion.button>
                       </div>
                     </div>
                   ))
@@ -511,7 +526,7 @@ export default function Marketplace({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 z-50 flex justify-end select-none"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-end select-none"
           >
             <motion.div
               key="cart-drawer-content"
@@ -519,55 +534,62 @@ export default function Marketplace({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 220 }}
-              className="w-full max-w-sm bg-white dark:bg-[#1C1C1E] h-full shadow-2xl p-5 flex flex-col justify-between"
+              className="w-full max-w-sm material-elevated h-full shadow-2xl p-6 sm:p-8 flex flex-col justify-between border-l border-border-subtle"
             >
-              <div className="space-y-4 flex-1 overflow-y-auto">
-                <div className="flex items-center justify-between border-b border-[#D4CFC7]/40 pb-3">
-                  <h4 className="text-base font-extrabold text-[#1C1C1E] dark:text-[#F5F5F7] uppercase tracking-wide flex items-center gap-1.5">
-                    <ShoppingBag size={18} className="text-[#2F7D4E]" />
+              <div className="space-y-4 flex-1 overflow-y-auto no-scrollbar">
+                <div className="flex items-center justify-between border-b border-border-subtle pb-4">
+                  <h4 className="text-body-md font-bold text-content-primary uppercase tracking-widest flex items-center gap-2">
+                    <ShoppingBag size={20} className="text-signal-success" />
                     {t.cartTitle}
                   </h4>
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     id="close-cart-btn"
                     onClick={() => setCartOpen(false)}
-                    className="text-xs font-extrabold text-[#8E8E93] hover:text-[#1C1C1E]"
+                    className="text-body-sm font-bold text-content-muted hover:text-content-primary transition-colors cursor-pointer"
                   >
                     Close
-                  </button>
+                  </motion.button>
                 </div>
 
                 {checkoutSuccess ? (
-                  <div className="py-12 text-center space-y-3">
-                    <CheckCircle className="text-emerald-500 w-12 h-12 mx-auto animate-bounce" />
-                    <div className="space-y-1">
-                      <h4 className="text-sm font-bold text-[#1C1C1E] dark:text-white">Order Placed Successfully!</h4>
-                      <p className="text-xs text-[#8E8E93] leading-relaxed max-w-xs mx-auto">{t.orderSavedSuccess}</p>
+                  <div className="py-16 text-center space-y-4">
+                    <CheckCircle className="text-signal-success w-16 h-16 mx-auto animate-bounce" />
+                    <div className="space-y-2">
+                      <h4 className="text-body-md font-bold text-content-primary">Order Placed Successfully!</h4>
+                      <p className="text-body-sm text-content-muted leading-relaxed max-w-xs mx-auto">{t.orderSavedSuccess}</p>
                     </div>
                   </div>
                 ) : cart.length === 0 ? (
-                  <div className="text-center py-16 space-y-2">
-                    <ShoppingBag className="text-[#8E8E93] mx-auto pb-1" size={32} />
-                    <p className="text-xs text-[#8E8E93] font-bold">{t.emptyCart}</p>
+                  <div className="bg-surface-glass rounded-[2rem] p-8 text-center shadow-sm border border-border-subtle my-auto mt-20">
+                    <div className="w-20 h-20 rounded-full bg-surface-elevated border border-border-subtle mx-auto flex items-center justify-center mb-4 shadow-sm">
+                      <ShoppingBag size={28} className="text-content-muted" />
+                    </div>
+                    <p className="text-body-md font-bold text-content-primary mb-1">Your cart is empty</p>
+                    <p className="text-body-sm text-content-secondary max-w-[200px] mx-auto leading-relaxed">{t.emptyCart || "Add verified inputs with PM-Kisan subsidies to see them here."}</p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-4 pt-2">
                     {cart.map((item) => (
                       <div
                         key={item.product.id}
-                        className="p-3 bg-[#F6F4F0]/40 dark:bg-[#121214] border border-[#D4CFC7]/30 dark:border-white/5 rounded-xl flex items-center justify-between gap-3"
+                        className="p-4 bg-surface-base border border-border-subtle rounded-2xl flex items-center justify-between gap-4 shadow-sm"
                       >
                         <div className="min-w-0 flex-1">
-                          <h5 className="text-xs font-bold text-[#1C1C1E] dark:text-[#F5F5F7] truncate">{item.product.name}</h5>
-                          <p className="text-[10px] text-emerald-600 font-bold mt-0.5">₹{item.product.price} · Qty: {item.quantity}</p>
+                          <h5 className="text-body-sm font-bold text-content-primary line-clamp-1">{item.product.name}</h5>
+                          <p className="text-caption text-signal-success font-bold font-mono mt-1">₹{item.product.price} · Qty: {item.quantity}</p>
                         </div>
-                        <button
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
                           id={`remove-cart-item-btn-${item.product.id}`}
                           aria-label="Remove item"
                           onClick={() => removeFromCart(item.product.id)}
-                          className="text-rose-500 hover:text-rose-700 p-1 cursor-pointer shrink-0"
+                          className="text-signal-critical hover:opacity-80 p-2 cursor-pointer shrink-0 transition-opacity"
                         >
-                          <Trash2 size={14} />
-                        </button>
+                          <Trash2 size={16} />
+                        </motion.button>
                       </div>
                     ))}
                   </div>
@@ -575,20 +597,22 @@ export default function Marketplace({
               </div>
 
               {!checkoutSuccess && cart.length > 0 && (
-                <div className="border-t border-[#D4CFC7]/40 dark:border-white/10 pt-4 space-y-4">
-                  <div className="flex justify-between text-xs font-bold text-[#1C1C1E] dark:text-[#F5F5F7]">
+                <div className="border-t border-border-subtle pt-6 space-y-5">
+                  <div className="flex justify-between items-center text-body-sm font-bold text-content-primary">
                     <span>Invoice Subtotal:</span>
-                    <span className="font-mono text-base text-[#2F7D4E]">₹{calculateSubtotal()}</span>
+                    <span className="font-mono text-title font-bold text-signal-success tracking-tight">₹{calculateSubtotal()}</span>
                   </div>
 
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     id="checkout-cart-btn"
                     onClick={handleCheckout}
-                    className="w-full h-12 bg-[#2F7D4E] hover:bg-[#256B3F] text-white font-extrabold text-xs rounded-xl shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+                    className="w-full h-14 bg-content-primary hover:opacity-90 text-surface-base font-bold text-body-md rounded-2xl shadow-md transition-opacity cursor-pointer flex items-center justify-center gap-2"
                   >
                     <span>{t.processPayment}</span>
-                    <ChevronRight size={14} />
-                  </button>
+                    <ChevronRight size={18} />
+                  </motion.button>
                 </div>
               )}
             </motion.div>

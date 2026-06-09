@@ -96,18 +96,18 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F4F0] dark:bg-[#0F0F10] flex flex-col justify-between p-4 sm:p-6 select-none font-sans transition-colors duration-normal">
+    <div className="min-h-screen bg-surface-base flex flex-col justify-between p-6 select-none font-sans transition-colors duration-normal">
       {/* Top Brand Block */}
-      <header className="w-full max-w-md mx-auto pt-6 flex flex-col items-center">
-        <div className="flex items-center gap-2 text-[#2F7D4E] dark:text-[#4ADE80] mb-2 scale-110">
-          <Sprout size={36} className="animate-spin-slow" />
-          <h1 className="text-2xl font-bold tracking-tight font-display">{t.appName}</h1>
+      <header className="w-full max-w-md mx-auto pt-8 flex flex-col items-center">
+        <div className="flex items-center gap-3 text-signal-success mb-3 scale-110">
+          <Sprout size={36} className="drop-shadow-sm" strokeWidth={2} />
+          <h1 className="text-h3 font-bold tracking-tight">{t.appName}</h1>
         </div>
-        <p className="text-sm text-[#5A5A5F] dark:text-[#A1A1A6] font-medium text-center">{t.tagline}</p>
+        <p className="text-body-md text-content-secondary font-medium text-center">{t.tagline}</p>
       </header>
 
       {/* Center Dynamic Onboarding Workspace */}
-      <main className="w-full max-w-md mx-auto my-auto py-6">
+      <main className="w-full max-w-md mx-auto my-auto py-8">
         <AnimatePresence mode="wait">
           {step === "language" && (
             <motion.div
@@ -115,12 +115,12 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white dark:bg-[#1C1C1E] rounded-3xl p-6 sm:p-8 shadow-md border border-[#D4CFC7] dark:border-[#2C2C2E]"
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="material-glass rounded-[2rem] p-8 shadow-2xl border border-border-subtle"
             >
-              <div className="flex items-center gap-2 text-[#5A5A5F] dark:text-[#F5F5F7] mb-6">
-                <Globe size={20} className="text-[#2F7D4E] dark:text-[#4ADE80]" />
-                <h2 className="text-lg font-bold">Select App Language / भाषा चुनें</h2>
+              <div className="flex items-center gap-3 text-content-primary mb-8">
+                <Globe size={22} className="text-signal-success" />
+                <h2 className="text-h4 font-bold">Select App Language / भाषा चुनें</h2>
               </div>
 
               <div className="grid grid-cols-1 gap-3">
@@ -132,14 +132,14 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
                       setLanguage(lang.code as LanguageCode);
                       setStep("phone");
                     }}
-                    className={`h-14 w-full rounded-2xl flex items-center justify-between px-5 font-semibold transition-all duration-fast ${
+                    className={`h-14 w-full rounded-2xl flex items-center justify-between px-6 text-body-md font-bold transition-all duration-normal ease-spring ${
                       selectedLanguage === lang.code
-                        ? "bg-[#2F7D4E] text-white shadow-sm ring-2 ring-[#2F7D4E]/30"
-                        : "bg-[#EDE8E0] dark:bg-[#2C2C2E] text-[#1C1C1E] dark:text-[#F5F5F7] hover:bg-[#D4CFC7]/80 dark:hover:bg-[#3A3A3D]/80"
+                        ? "bg-content-primary text-surface-base shadow-lg scale-[0.98]"
+                        : "bg-surface-elevated text-content-primary hover:bg-border-subtle hover:scale-[1.02]"
                     }`}
                   >
                     <span>{lang.label}</span>
-                    {selectedLanguage === lang.code && <CheckCircle size={18} />}
+                    {selectedLanguage === lang.code && <CheckCircle size={18} className="text-surface-base" />}
                   </button>
                 ))}
               </div>
@@ -152,18 +152,18 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white dark:bg-[#1C1C1E] rounded-3xl p-6 sm:p-8 shadow-md border border-[#D4CFC7] dark:border-[#2C2C2E]"
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="material-glass rounded-[2rem] p-8 shadow-2xl border border-border-subtle"
             >
-              <h2 className="text-xl font-bold text-[#1C1C1E] dark:text-[#F5F5F7] mb-4 flex items-center gap-2">
-                <Phone size={20} className="text-[#2F7D4E] dark:text-[#4ADE80]" />
+              <h2 className="text-h4 font-bold text-content-primary mb-6 flex items-center gap-3">
+                <Phone size={22} className="text-signal-success" />
                 {t.contPhone}
               </h2>
 
-              <form onSubmit={handlePhoneSubmit} className="space-y-4">
+              <form onSubmit={handlePhoneSubmit} className="space-y-5">
                 <div className="space-y-2">
                   <div className="relative flex items-center">
-                    <span className="absolute left-4 text-base font-semibold text-[#5A5A5F] dark:text-[#8E8E93] border-r border-[#D4CFC7] pr-3 dark:border-[#3A3A3C]">
+                    <span className="absolute left-4 text-body-md font-bold text-content-muted border-r border-border-subtle pr-3">
                       +91
                     </span>
                     <input
@@ -175,16 +175,16 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
                       placeholder={t.phonePlaceholder}
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                      className="w-full h-14 bg-[#F6F4F0] dark:bg-[#2C2C2E] border border-[#D4CFC7] dark:border-[#3A3A3C] rounded-2xl pl-18 pr-4 text-base font-semibold text-[#1C1C1E] dark:text-[#F5F5F7] focus:outline-none focus:ring-2 focus:ring-[#2F7D4E]/30 focus:border-[#2F7D4E] transition-all"
+                      className="w-full h-14 bg-surface-elevated border border-border-subtle rounded-2xl pl-18 pr-4 text-body-md font-bold text-content-primary focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-all duration-normal placeholder-content-muted"
                     />
                   </div>
-                  {error && <p className="text-xs font-semibold text-red-500 pl-1" role="alert">{error}</p>}
+                  {error && <p className="text-caption font-semibold text-signal-critical pl-1" role="alert">{error}</p>}
                 </div>
 
                 <button
                   id="send-otp-btn"
                   type="submit"
-                  className="w-full h-14 bg-[#2F7D4E] hover:bg-[#256B3F] text-white font-bold rounded-2xl transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full h-14 bg-content-primary hover:opacity-90 text-surface-base font-bold text-body-md rounded-2xl transition-opacity shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Shield size={18} />
                   {t.sendOTP}
@@ -192,16 +192,16 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
               </form>
 
               <div className="relative my-6 flex items-center justify-center">
-                <span className="absolute w-full border-t border-[#D4CFC7] dark:border-[#2C2C2E]" />
-                <span className="relative bg-white dark:bg-[#1C1C1E] px-3 text-xs text-[#8E8E93] dark:text-[#A1A1A6] font-semibold">OR</span>
+                <span className="absolute w-full border-t border-border-subtle" />
+                <span className="relative bg-surface-base px-3 text-micro text-content-muted font-bold uppercase tracking-widest">OR</span>
               </div>
 
               <button
                 id="google-signin"
                 onClick={() => setStep("setup")}
-                className="w-full h-12 bg-[#EDE8E0] dark:bg-[#2C2C2E] text-[#1C1C1E] dark:text-[#F5F5F7] hover:bg-[#D4CFC7] dark:hover:bg-[#3A3A3C] font-semibold rounded-2xl transition-all text-sm flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full h-14 bg-surface-elevated text-content-primary hover:bg-border-subtle font-bold rounded-2xl transition-all duration-fast text-body-sm flex items-center justify-center gap-2 cursor-pointer border border-border-subtle"
               >
-                <Compass size={16} />
+                <Compass size={18} />
                 {t.continueGoogle}
               </button>
             </motion.div>
@@ -213,31 +213,31 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white dark:bg-[#1C1C1E] rounded-3xl p-6 sm:p-8 shadow-md border border-[#D4CFC7] dark:border-[#2C2C2E]"
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="material-glass rounded-[2rem] p-8 shadow-2xl border border-border-subtle"
             >
-              <h2 className="text-xl font-bold text-[#1C1C1E] dark:text-[#F5F5F7] mb-2">{t.verifyOTP}</h2>
-              <p className="text-xs text-[#5A5A5F] dark:text-[#a1a1a6] leading-relaxed mb-6">
-                {t.otpSentMsg} <span className="font-bold text-[#1C1C1E] dark:text-[#F5F5F7] font-mono">+91 {phone}</span>.
+              <h2 className="text-h4 font-bold text-content-primary mb-2">{t.verifyOTP}</h2>
+              <p className="text-body-sm text-content-secondary leading-relaxed mb-8">
+                {t.otpSentMsg} <span className="font-bold text-content-primary font-mono">+91 {phone}</span>.
                 <br />
-                <span className="text-[#2F7D4E] dark:text-[#4ADE80] font-bold">Use test OTP: 1234</span>
+                <span className="text-signal-success font-bold mt-1 inline-block">Use test OTP: 1234</span>
               </p>
 
-              <form onSubmit={handleOtpVerify} className="space-y-5">
+              <form onSubmit={handleOtpVerify} className="space-y-6">
                 <div className="space-y-2">
                   <div 
-                    className="flex gap-2 justify-center relative select-none cursor-pointer"
+                    className="flex gap-3 justify-center relative select-none cursor-pointer"
                     onClick={() => otpInputRef.current?.focus()}
                   >
                     {[0, 1, 2, 3].map((idx) => (
                       <div
                         key={idx}
-                        className={`w-14 h-14 rounded-2xl border-2 flex items-center justify-center text-xl font-extrabold font-mono transition-all duration-fast ${
+                        className={`w-16 h-16 rounded-2xl border-[1.5px] flex items-center justify-center text-h3 font-bold font-mono transition-all duration-fast ${
                           otp.length === idx
-                            ? "border-[#2F7D4E] bg-white dark:bg-[#2C2C2E] shadow-sm animate-pulse"
+                            ? "border-signal-success bg-surface-elevated shadow-lg animate-pulse"
                             : otp[idx]
-                            ? "border-[#D4CFC7] dark:border-[#3A3A3C] bg-[#EDE8E0] dark:bg-[#2C2C2E] text-[#2F7D4E] dark:text-[#4ADE80]"
-                            : "border-[#D4CFC7] dark:border-[#2C2C2E] bg-[#F6F4F0] dark:bg-[#1C1C1E]"
+                            ? "border-border-strong bg-surface-base text-content-primary"
+                            : "border-border-subtle bg-surface-elevated text-content-muted"
                         }`}
                       >
                         {otp[idx] || ""}
@@ -256,21 +256,21 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
                       className="absolute inset-0 w-full h-full bg-transparent text-transparent caret-transparent border-none outline-none focus:ring-0 z-10 cursor-text"
                     />
                   </div>
-                  {error && <p className="text-xs text-red-500 font-semibold text-center mt-2" role="alert">{error}</p>}
+                  {error && <p className="text-caption text-signal-critical font-bold text-center mt-3" role="alert">{error}</p>}
                 </div>
 
                 <button
                   id="confirm-otp-btn"
                   type="submit"
-                  className="w-full h-14 bg-[#2F7D4E] hover:bg-[#256B3F] text-white font-bold rounded-2xl transition-colors shadow-sm flex items-center justify-center gap-1 cursor-pointer"
+                  className="w-full h-14 bg-content-primary hover:opacity-90 text-surface-base text-body-md font-bold rounded-2xl transition-opacity shadow-lg flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {t.confirmBtn}
                 </button>
 
                 <div className="text-center">
                   {timer > 0 ? (
-                    <p className="text-xs text-[#8E8E93] font-semibold">
-                      {t.resendOTP} <span className="font-bold text-[#1C1C1E] dark:text-[#F5F5F7] font-mono">{timer}s</span>
+                    <p className="text-body-sm text-content-muted font-medium">
+                      {t.resendOTP} <span className="font-bold text-content-primary font-mono">{timer}s</span>
                     </p>
                   ) : (
                     <button
@@ -280,7 +280,7 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
                         setTimer(30);
                         setError("");
                       }}
-                      className="text-xs font-bold text-[#2F7D4E] dark:text-[#4ADE80] hover:underline"
+                      className="text-body-sm font-bold text-content-primary hover:text-signal-success transition-colors duration-fast underline decoration-border-strong underline-offset-4"
                     >
                       Resend SMS Code
                     </button>
@@ -296,22 +296,22 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white dark:bg-[#1C1C1E] rounded-3xl p-6 sm:p-8 shadow-md border border-[#D4CFC7] dark:border-[#2C2C2E] max-h-[80vh] overflow-y-auto"
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="material-glass rounded-[2rem] p-8 shadow-2xl border border-border-subtle max-h-[85vh] overflow-y-auto scrollbar-hide"
             >
-              <h2 className="text-xl font-bold text-[#1C1C1E] dark:text-[#F5F5F7] mb-2 flex items-center gap-2">
-                <Landmark size={20} className="text-[#2F7D4E] dark:text-[#4ADE80]" />
+              <h2 className="text-h4 font-bold text-content-primary mb-2 flex items-center gap-3">
+                <Landmark size={22} className="text-signal-success" />
                 {t.onbTitle}
               </h2>
-              <p className="text-xs text-[#5A5A5F] dark:text-[#A1A1A6] mb-5 font-semibold">Customize localized agroclimate parameters</p>
+              <p className="text-body-sm text-content-secondary mb-8 font-medium">Customize localized agroclimate parameters</p>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {/* Crop Option */}
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-[#5A5A5F] dark:text-[#A1A1A6] select-none block">
+                <div className="space-y-3">
+                  <label className="text-caption font-bold text-content-secondary uppercase tracking-wider select-none block">
                     {t.onbCrop}
                   </label>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-3">
                     {["Cotton", "Tomato", "Wheat", "Soybean", "Sugarcane", "Onion"].map((cOption) => (
                       <button
                         key={cOption}
@@ -324,10 +324,10 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
                           else if (cOption === "Soybean") setDistrict("Indore");
                           else if (cOption === "Sugarcane") setDistrict("Mandya");
                         }}
-                        className={`py-3 rounded-xl border text-xs font-bold transition-all ${
+                        className={`py-3.5 rounded-2xl border-[1.5px] text-body-sm font-bold transition-all duration-fast ${
                           crop === cOption
-                            ? "bg-[#E8F5EC] border-[#2F7D4E] text-[#2F7D4E]"
-                            : "bg-[#F6F4F0] dark:bg-[#2C2C2E] border-transparent text-[#1C1C1E] dark:text-[#F5F5F7]"
+                            ? "bg-content-primary border-content-primary text-surface-base shadow-lg"
+                            : "bg-surface-elevated border-border-subtle text-content-primary hover:border-border-strong"
                         }`}
                       >
                         {cOption}
@@ -338,8 +338,8 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
 
                 {/* Farm Size */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-[#5A5A5F] dark:text-[#A1A1A6] block" htmlFor="farm-size-input">
+                  <div className="space-y-2">
+                    <label className="text-caption font-bold text-content-secondary uppercase tracking-wider block" htmlFor="farm-size-input">
                       {t.onbSize}
                     </label>
                     <input
@@ -349,18 +349,18 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
                       min="0.1"
                       value={farmSize}
                       onChange={(e) => setFarmSize(e.target.value)}
-                      className="w-full h-12 bg-[#F6F4F0] dark:bg-[#2C2C2E] border border-[#D4CFC7] dark:border-[#3A3A3C] rounded-xl px-4 text-sm font-semibold text-[#1C1C1E] dark:text-[#F5F5F7] focus:outline-none focus:ring-2 focus:ring-[#2F7D4E]/30"
+                      className="w-full h-14 bg-surface-elevated border border-border-subtle rounded-2xl px-4 text-body-md font-bold text-content-primary focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-colors"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-[#5A5A5F] dark:text-[#A1A1A6] block" htmlFor="farm-unit-select">
+                  <div className="space-y-2">
+                    <label className="text-caption font-bold text-content-secondary uppercase tracking-wider block" htmlFor="farm-unit-select">
                       Unit
                     </label>
                     <select
                       id="farm-unit-select"
                       value={farmUnit}
                       onChange={(e: any) => setFarmUnit(e.target.value)}
-                      className="w-full h-12 bg-[#F6F4F0] dark:bg-[#2C2C2E] border border-[#D4CFC7] dark:border-[#3A3A3C] rounded-xl px-4 text-sm font-semibold text-[#1C1C1E] dark:text-[#F5F5F7] focus:outline-none focus:ring-2 focus:ring-[#2F7D4E]/30"
+                      className="w-full h-14 bg-surface-elevated border border-border-subtle rounded-2xl px-4 text-body-md font-bold text-content-primary focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-colors appearance-none"
                     >
                       <option value="Acres">Acres</option>
                       <option value="Bigha">Bigha</option>
@@ -371,8 +371,8 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
 
                 {/* State / Location */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-[#5A5A5F] dark:text-[#A1A1A6] block" htmlFor="farm-state-select">
+                  <div className="space-y-2">
+                    <label className="text-caption font-bold text-content-secondary uppercase tracking-wider block" htmlFor="farm-state-select">
                       {t.onbState}
                     </label>
                     <select
@@ -387,7 +387,7 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
                         else if (s === "Gujarat") setDistrict("Gondal");
                         else if (s === "Karnataka") setDistrict("Mandya");
                       }}
-                      className="w-full h-12 bg-[#F6F4F0] dark:bg-[#2C2C2E] border border-[#D4CFC7] dark:border-[#3A3A3C] rounded-xl px-4 text-sm font-semibold text-[#1C1C1E] dark:text-[#F5F5F7] focus:outline-none focus:ring-2 focus:ring-[#2F7D4E]/30"
+                      className="w-full h-14 bg-surface-elevated border border-border-subtle rounded-2xl px-4 text-body-md font-bold text-content-primary focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-colors appearance-none"
                     >
                       <option value="Maharashtra">Maharashtra</option>
                       <option value="Punjab">Punjab</option>
@@ -395,8 +395,8 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
                       <option value="Karnataka">Karnataka</option>
                     </select>
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-xs font-bold text-[#5A5A5F] dark:text-[#A1A1A6] block" htmlFor="district-input">
+                  <div className="space-y-2">
+                    <label className="text-caption font-bold text-content-secondary uppercase tracking-wider block" htmlFor="district-input">
                       {t.onbDistrict}
                     </label>
                     <input
@@ -405,19 +405,19 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
                       placeholder="e.g. Nashik"
                       value={district}
                       onChange={(e) => setDistrict(e.target.value)}
-                      className="w-full h-12 bg-[#F6F4F0] dark:bg-[#2C2C2E] border border-[#D4CFC7] dark:border-[#3A3A3C] rounded-xl px-4 text-sm font-semibold text-[#1C1C1E] dark:text-[#F5F5F7] focus:outline-none focus:ring-2 focus:ring-[#2F7D4E]/30"
+                      className="w-full h-14 bg-surface-elevated border border-border-subtle rounded-2xl px-4 text-body-md font-bold text-content-primary focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-colors placeholder-content-muted"
                     />
                   </div>
                 </div>
 
-                {error && <p className="text-xs text-red-500 font-semibold" role="alert">{error}</p>}
+                {error && <p className="text-caption text-signal-critical font-bold" role="alert">{error}</p>}
 
                 <button
                   id="complete-onboard-btn"
                   onClick={handleCompleteSetup}
-                  className="w-full h-14 bg-[#2F7D4E] hover:bg-[#256B3F] text-white font-bold rounded-2xl transition-colors shadow-sm flex items-center justify-center gap-2 mt-4 cursor-pointer"
+                  className="w-full h-14 bg-content-primary hover:opacity-90 text-surface-base text-body-md font-bold rounded-2xl transition-opacity shadow-lg flex items-center justify-center gap-2 mt-6 cursor-pointer"
                 >
-                  <CheckCircle size={18} />
+                  <CheckCircle size={20} />
                   {t.completeOnb}
                 </button>
               </div>
@@ -427,9 +427,9 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
       </main>
 
       {/* Footer Credentials */}
-      <footer className="w-full border-t border-[#D4CFC7]/50 dark:border-white/10 pt-4 pb-2 text-center text-xs text-[#8E8E93] dark:text-neutral-500 font-medium select-none flex items-center justify-center gap-2">
-        <span>Protected and Verified by e-NAM & PM-Kisan Portals</span>
-        <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+      <footer className="w-full pt-6 pb-4 text-center text-caption text-content-muted font-medium select-none flex items-center justify-center gap-2">
+        <span>Protected by e-NAM & PM-Kisan Architecture</span>
+        <span aria-hidden="true" className="w-1.5 h-1.5 rounded-full bg-signal-success animate-pulse shadow-[0_0_8px_var(--color-signal-success)]" />
       </footer>
     </div>
   );

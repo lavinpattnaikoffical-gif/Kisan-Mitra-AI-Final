@@ -107,29 +107,29 @@ export default function Settings({
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 select-none font-sans">
       {/* Settings Forms - 7 cols */}
       <div className="lg:col-span-7">
-        <form onSubmit={handleSave} className="bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl p-5 sm:p-6 shadow-sm space-y-4">
-          <h2 className="text-sm font-extrabold text-[#1C1C1E] dark:text-[#F5F5F7] uppercase tracking-wider flex items-center gap-1.5 border-b border-[#D4CFC7]/30 pb-3">
-            <User size={16} className="text-[#2F7D4E]" />
+        <form onSubmit={handleSave} className="material-elevated border border-border-subtle rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+          <h2 className="text-body-md font-bold text-content-primary uppercase tracking-widest flex items-center gap-2 border-b border-border-subtle pb-4">
+            <User size={20} className="text-signal-success" />
             {t.profileTitle}
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* Name Form */}
-            <div className="space-y-1">
-              <label className="text-[10px] font-extrabold text-[#8E8E93] uppercase tracking-wider block" htmlFor="farmer-name-input">Farmer Name</label>
+            <div className="space-y-1.5">
+              <label className="text-micro font-bold text-content-muted uppercase tracking-widest block" htmlFor="farmer-name-input">Farmer Name</label>
               <input
                 id="farmer-name-input"
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full h-11 bg-[#F6F4F0] dark:bg-[#2C2C2E] text-xs font-bold border border-[#D4CFC7] dark:border-white/10 rounded-xl px-3 focus:outline-none focus:ring-1 focus:ring-[#2F7D4E]"
+                className="w-full h-12 bg-surface-base text-body-sm font-medium border border-border-subtle rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-colors shadow-sm"
               />
             </div>
 
             {/* Mobile Contact Form */}
-            <div className="space-y-1">
-              <label className="text-[10px] font-extrabold text-[#8E8E93] uppercase tracking-wider block" htmlFor="farmer-phone-input">Mobile Contact (+91)</label>
+            <div className="space-y-1.5">
+              <label className="text-micro font-bold text-content-muted uppercase tracking-widest block" htmlFor="farmer-phone-input">Mobile Contact (+91)</label>
               <input
                 id="farmer-phone-input"
                 type="tel"
@@ -137,18 +137,18 @@ export default function Settings({
                 maxLength={10}
                 value={phone}
                 onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-                className="w-full h-11 bg-[#F6F4F0] dark:bg-[#2C2C2E] text-xs font-bold border border-[#D4CFC7] dark:border-white/10 rounded-xl px-3 focus:outline-none focus:ring-1 focus:ring-[#2F7D4E]"
+                className="w-full h-12 bg-surface-base text-body-sm font-medium border border-border-subtle rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-colors shadow-sm"
               />
             </div>
 
             {/* Profile State selection */}
-            <div className="space-y-1">
-              <label className="text-[10px] font-extrabold text-[#8E8E93] uppercase tracking-wider block" htmlFor="state-select">{t.onbState}</label>
+            <div className="space-y-1.5">
+              <label className="text-micro font-bold text-content-muted uppercase tracking-widest block" htmlFor="state-select">{t.onbState}</label>
               <select
                 id="state-select"
                 value={farmState}
                 onChange={(e) => setFarmState(e.target.value)}
-                className="w-full h-11 bg-[#F6F4F0] dark:bg-[#2C2C2E] text-xs font-bold border border-[#D4CFC7] dark:border-white/10 rounded-xl px-3 focus:outline-none focus:ring-1 focus:ring-[#2F7D4E]"
+                className="w-full h-12 bg-surface-base text-body-sm font-medium border border-border-subtle rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-colors shadow-sm"
               >
                 <option value="Maharashtra">Maharashtra</option>
                 <option value="Punjab">Punjab</option>
@@ -158,26 +158,26 @@ export default function Settings({
             </div>
 
             {/* Profile District details */}
-            <div className="space-y-1">
-              <label className="text-[10px] font-extrabold text-[#8E8E93] uppercase tracking-wider block" htmlFor="district-select-input">{t.onbDistrict}</label>
+            <div className="space-y-1.5">
+              <label className="text-micro font-bold text-content-muted uppercase tracking-widest block" htmlFor="district-select-input">{t.onbDistrict}</label>
               <input
                 id="district-select-input"
                 type="text"
                 required
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
-                className="w-full h-11 bg-[#F6F4F0] dark:bg-[#2C2C2E] text-xs font-bold border border-[#D4CFC7] dark:border-white/10 rounded-xl px-3 focus:outline-none focus:ring-1 focus:ring-[#2F7D4E]"
+                className="w-full h-12 bg-surface-base text-body-sm font-medium border border-border-subtle rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-colors shadow-sm"
               />
             </div>
 
             {/* Profile Crop selection */}
-            <div className="space-y-1">
-              <label className="text-[10px] font-extrabold text-[#8E8E93] uppercase tracking-wider block" htmlFor="crop-select">Primary Cultivated Crop</label>
+            <div className="space-y-1.5">
+              <label className="text-micro font-bold text-content-muted uppercase tracking-widest block" htmlFor="crop-select">Primary Cultivated Crop</label>
               <select
                 id="crop-select"
                 value={crop}
                 onChange={(e) => setCrop(e.target.value)}
-                className="w-full h-11 bg-[#F6F4F0] dark:bg-[#2C2C2E] text-xs font-bold border border-[#D4CFC7] dark:border-white/10 rounded-xl px-3 focus:outline-none focus:ring-1 focus:ring-[#2F7D4E]"
+                className="w-full h-12 bg-surface-base text-body-sm font-medium border border-border-subtle rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-colors shadow-sm"
               >
                 <option value="Cotton">Cotton / कपास</option>
                 <option value="Tomato">Tomato / टमाटर</option>
@@ -188,10 +188,10 @@ export default function Settings({
               </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               {/* Farm size details */}
-              <div className="space-y-1">
-                <label className="text-[10px] font-extrabold text-[#8E8E93] uppercase tracking-wider block" htmlFor="farm-size-select">{t.cropSize}</label>
+              <div className="space-y-1.5">
+                <label className="text-micro font-bold text-content-muted uppercase tracking-widest block" htmlFor="farm-size-select">{t.cropSize}</label>
                 <input
                   id="farm-size-select"
                   type="number"
@@ -199,18 +199,18 @@ export default function Settings({
                   required
                   value={size}
                   onChange={(e) => setSize(e.target.value)}
-                  className="w-full h-11 bg-[#F6F4F0] dark:bg-[#2C2C2E] text-xs font-bold border border-[#D4CFC7] dark:border-white/10 rounded-xl px-2 focus:outline-none focus:ring-1 focus:ring-[#2F7D4E]"
+                  className="w-full h-12 bg-surface-base text-body-sm font-medium border border-border-subtle rounded-xl px-3 focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-colors shadow-sm"
                 />
               </div>
 
               {/* Farm units select */}
-              <div className="space-y-1">
-                <label className="text-[10px] font-extrabold text-[#8E8E93] uppercase tracking-wider block" htmlFor="unit-select">Farm Unit</label>
+              <div className="space-y-1.5">
+                <label className="text-micro font-bold text-content-muted uppercase tracking-widest block" htmlFor="unit-select">Farm Unit</label>
                 <select
                   id="unit-select"
                   value={farmUnit}
                   onChange={(e: any) => setFarmUnit(e.target.value)}
-                  className="w-full h-11 bg-[#F6F4F0] dark:bg-[#2C2C2E] text-xs font-bold border border-[#D4CFC7] dark:border-white/10 rounded-xl px-2 focus:outline-none focus:ring-1 focus:ring-[#2F7D4E]"
+                  className="w-full h-12 bg-surface-base text-body-sm font-medium border border-border-subtle rounded-xl px-2 focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-colors shadow-sm"
                 >
                   <option value="Acres">Acres</option>
                   <option value="Bigha">Bigha</option>
@@ -221,19 +221,19 @@ export default function Settings({
           </div>
 
           {/* Quick inline language changer inside form parameters */}
-          <div className="py-2.5 border-t border-[#D4CFC7]/30 dark:border-white/5 space-y-2">
-            <span className="text-[10px] font-extrabold text-[#8E8E93] uppercase tracking-wider block">Application Language</span>
-            <div className="flex flex-wrap gap-2 select-none">
+          <div className="pt-4 border-t border-border-subtle space-y-3">
+            <span className="text-micro font-bold text-content-muted uppercase tracking-widest block">Application Language</span>
+            <div className="flex flex-wrap gap-3 select-none">
               {LANGUAGES.map((lang) => (
                 <button
                   key={lang.code}
                   id={`config-lang-btn-${lang.code}`}
                   type="button"
                   onClick={() => setLanguage(lang.code as LanguageCode)}
-                  className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                  className={`px-4 py-2.5 rounded-xl text-caption font-bold border transition-all duration-normal cursor-pointer shadow-sm ${
                     selectedLanguage === lang.code
-                      ? "bg-[#2F7D4E] border-[#2F7D4E] text-white"
-                      : "bg-[#F6F4F0] border-transparent dark:bg-[#2C2C2E] text-[#1C1C1E] dark:text-[#F5F5F7]"
+                      ? "bg-content-primary border-content-primary text-surface-base"
+                      : "bg-surface-base border-border-subtle hover:border-border-strong text-content-primary"
                   }`}
                 >
                   {lang.label}
@@ -245,14 +245,14 @@ export default function Settings({
           <button
             id="save-changes-btn"
             type="submit"
-            className="w-full h-11 bg-[#2F7D4E] hover:bg-[#256B3F] text-white font-extrabold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1"
+            className="w-full h-14 bg-content-primary hover:opacity-90 text-surface-base font-bold text-body-md rounded-2xl shadow-md transition-opacity cursor-pointer flex items-center justify-center gap-2 mt-4"
           >
             {t.saveChanges}
           </button>
 
           {saveSuccess && (
-            <div className="text-center p-2 rounded-xl bg-emerald-50 border border-emerald-200">
-              <p className="text-xs text-emerald-800 font-bold">✓ {t.savedMsg}</p>
+            <div className="text-center p-3 rounded-xl bg-signal-success/10 border border-signal-success/20">
+              <p className="text-caption text-signal-success font-bold tracking-wide">✓ {t.savedMsg}</p>
             </div>
           )}
         </form>
@@ -261,18 +261,18 @@ export default function Settings({
       {/* Settings Options sidebar & diagnostic parameters - 5 cols */}
       <div className="lg:col-span-5 space-y-6">
         {/* Agricultural AI System parameters */}
-        <section className="bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl p-5 shadow-sm space-y-4">
-          <h3 className="text-xs font-extrabold text-[#8E8E93] uppercase tracking-widest">{t.apiConfigTitle}</h3>
+        <section className="material-elevated border border-border-subtle rounded-3xl p-6 sm:p-8 shadow-sm space-y-5">
+          <h3 className="text-micro font-bold text-content-muted uppercase tracking-widest border-b border-border-subtle pb-3">{t.apiConfigTitle}</h3>
 
-          <div className="space-y-4 select-none">
+          <div className="space-y-5 select-none">
             {/* Preferred Model Choice */}
-            <div className="space-y-1">
-              <label className="text-[10px] font-extrabold text-[#8E8E93] uppercase tracking-wider block" htmlFor="model-select">{t.modelChoice}</label>
+            <div className="space-y-1.5">
+              <label className="text-micro font-bold text-content-muted uppercase tracking-widest block" htmlFor="model-select">{t.modelChoice}</label>
               <select
                 id="model-select"
                 value={selectedModel}
                 onChange={(e) => setSelectedModel(e.target.value)}
-                className="w-full h-10 bg-[#F6F4F0] dark:bg-[#2C2C2E] text-xs font-bold border border-[#D4CFC7]/40 dark:border-white/10 rounded-xl px-3 focus:outline-none focus:ring-1 focus:ring-[#2F7D4E]"
+                className="w-full h-12 bg-surface-base text-body-sm font-medium border border-border-subtle rounded-xl px-4 focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-colors shadow-sm"
               >
                 <option value="gemini-3.5-flash">Gemini 3.5 Flash (Default)</option>
                 <option value="gemini-3.1-pro-preview">Gemini 3.1 Pro Preview</option>
@@ -281,21 +281,21 @@ export default function Settings({
             </div>
 
             {/* Cloud Synchronization toggles */}
-            <div className="flex items-center justify-between py-2 border-b border-[#D4CFC7]/30 dark:border-white/5">
+            <div className="flex items-center justify-between py-3 border-t border-b border-border-subtle">
               <div>
-                <p className="text-xs font-bold text-[#1C1C1E] dark:text-[#F5F5F7]">{t.cloudSync}</p>
-                <p className="text-[10px] text-[#8E8E93] font-semibold">Continuous backup of local logs & scan histories</p>
+                <p className="text-body-sm font-bold text-content-primary">{t.cloudSync}</p>
+                <p className="text-caption text-content-muted font-semibold mt-0.5 tracking-wide">Continuous backup of local logs & scan histories</p>
               </div>
 
               <button
                 id="cloud-sync-toggle"
                 onClick={() => setCloudSync(!cloudSync)}
-                className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer focus:outline-none ${
-                  cloudSync ? "bg-[#2F7D4E]" : "bg-[#EDE8E0] dark:bg-[#2C2C2E]"
+                className={`w-14 h-7 rounded-full transition-colors relative cursor-pointer focus:outline-none shadow-inner ${
+                  cloudSync ? "bg-signal-success" : "bg-border-strong"
                 }`}
               >
-                <span className={`absolute top-1 bg-white w-4 h-4 rounded-full transition-transform ${
-                  cloudSync ? "translate-x-7" : "translate-x-1"
+                <span className={`absolute top-1 bg-surface-base w-5 h-5 rounded-full transition-transform shadow-sm ${
+                  cloudSync ? "translate-x-8" : "translate-x-1"
                 }`} />
               </button>
             </div>
@@ -303,18 +303,18 @@ export default function Settings({
             {/* Units standard preference toggles (temp standard C vs F) */}
             <div className="flex items-center justify-between py-1">
               <div>
-                <p className="text-xs font-bold text-[#1C1C1E] dark:text-[#F5F5F7]">Telemetry Temperature Metric</p>
-                <p className="text-[10px] text-[#8E8E93] font-semibold">Prefer weather data listed in Celsius units</p>
+                <p className="text-body-sm font-bold text-content-primary">Telemetry Temperature Metric</p>
+                <p className="text-caption text-content-muted font-semibold mt-0.5 tracking-wide">Prefer weather data listed in Celsius units</p>
               </div>
 
-              <div className="flex bg-[#EDE8E0] dark:bg-[#121214] rounded-lg p-0.5 border border-[#D4CFC7]/30 shadow-inner">
+              <div className="flex bg-surface-base rounded-lg p-1 border border-border-subtle shadow-inner">
                 {["C", "F"].map((u) => (
                   <button
                     key={u}
                     id={`temp-unit-btn-${u}`}
                     onClick={() => setTempUnit(u as any)}
-                    className={`px-2.5 py-1 text-xs font-bold rounded-md transition-all cursor-pointer ${
-                      tempUnit === u ? "bg-[#2F7D4E] text-white" : "text-[#5A5A5F]"
+                    className={`px-3 py-1.5 text-caption font-bold rounded-md transition-all duration-fast cursor-pointer ${
+                      tempUnit === u ? "bg-content-primary text-surface-base shadow-sm" : "text-content-muted hover:text-content-primary"
                     }`}
                   >
                     °{u}
@@ -326,18 +326,18 @@ export default function Settings({
         </section>
 
         {/* Portability Backups and Security Hardening section */}
-        <section className="bg-white dark:bg-[#1C1C1E] border border-[#D4CFC7] dark:border-[#2C2C2E] rounded-3xl p-5 shadow-sm space-y-4">
-          <h3 className="text-xs font-extrabold text-[#8E8E93] uppercase tracking-widest">DATA PORTABILITY & BACKUP</h3>
+        <section className="material-elevated border border-border-subtle rounded-3xl p-6 sm:p-8 shadow-sm space-y-5">
+          <h3 className="text-micro font-bold text-content-muted uppercase tracking-widest border-b border-border-subtle pb-3">DATA PORTABILITY & BACKUP</h3>
 
-          <div className="space-y-2.5">
+          <div className="space-y-4">
             {/* Export data button */}
             <button
               id="export-data-btn"
               onClick={handleExportDataSubmit}
               type="button"
-              className="w-full h-11 bg-transparent hover:bg-[#F6F4F0] text-[#1C1C1E] dark:text-[#F5F5F7] text-xs font-extrabold rounded-xl border border-[#D4CFC7] dark:border-white/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              className="w-full h-12 bg-surface-base hover:bg-border-subtle text-content-primary text-body-sm font-bold rounded-xl border border-border-subtle hover:border-border-strong transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
             >
-              <FileDown size={14} />
+              <FileDown size={18} />
               <span>{t.exportData}</span>
             </button>
 
@@ -351,9 +351,9 @@ export default function Settings({
                 }
               }}
               type="button"
-              className="w-full h-11 bg-transparent hover:bg-rose-50 text-rose-600 dark:hover:bg-rose-950/15 text-xs font-extrabold rounded-xl border border-rose-200 hover:border-rose-500 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              className="w-full h-12 bg-signal-critical/5 hover:bg-signal-critical/10 text-signal-critical text-body-sm font-bold rounded-xl border border-signal-critical/20 hover:border-signal-critical/50 transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-sm"
             >
-              <Trash2 size={13} />
+              <Trash2 size={16} />
               <span>{t.deleteAccount}</span>
             </button>
           </div>
