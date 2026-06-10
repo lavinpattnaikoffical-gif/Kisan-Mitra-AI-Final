@@ -4,8 +4,10 @@
  */
 
 export interface UserProfile {
+  _id?: string;
   name: string;
   phone: string;
+  role?: string;
   state: string;
   district: string;
   language: string;

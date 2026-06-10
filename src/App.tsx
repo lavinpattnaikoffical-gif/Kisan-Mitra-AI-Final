@@ -26,6 +26,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 
 import { UserProfile, MetricItem, InboxAlert, MarketProduct, FarmActivityLog, ScanRecord, ChatMessage } from "./types";
 import { TRANSLATIONS, LanguageCode } from "./translations";
+import { api } from "./utils/api";
 
 // Components
 import LivingSurface from "./components/LivingSurface";
@@ -84,35 +85,48 @@ export default function App() {
   const [listings, setListings] = useState<any[]>([]);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
 
-  // Load from local storage
+  // Load from local storage and backend
   useEffect(() => {
-    try {
-      const savedProfile = localStorage.getItem("kisan_profile");
-      if (savedProfile) {
-        const parsed = JSON.parse(savedProfile);
-        setProfile(parsed);
-        setSelectedLanguage(parsed.language || "English");
+    const initApp = async () => {
+      try {
+        const token = localStorage.getItem("kisan_token");
+        if (token) {
+          const res = await api.getMe();
+          if (res.success) {
+            const parsed = res.data;
+            setProfile(parsed);
+            setSelectedLanguage(parsed.language || "English");
+            localStorage.setItem("kisan_profile", JSON.stringify(parsed));
+          } else {
+            localStorage.removeItem("kisan_token");
+            localStorage.removeItem("kisan_profile");
+          }
+        } else {
+          // Fallback to local profile if token is missing
+          const savedProfile = localStorage.getItem("kisan_profile");
+          if (savedProfile) {
+            const parsed = JSON.parse(savedProfile);
+            setProfile(parsed);
+            setSelectedLanguage(parsed.language || "English");
+          }
+        }
+        
+        const savedScans = localStorage.getItem("kisan_scans");
+        if (savedScans) setScans(JSON.parse(savedScans));
+
+        const savedLogs = localStorage.getItem("kisan_logs");
+        if (savedLogs) setLogs(JSON.parse(savedLogs));
+
+        const savedListings = localStorage.getItem("kisan_listings");
+        if (savedListings) setListings(JSON.parse(savedListings));
+        
+        const savedChat = localStorage.getItem("kisan_chat");
+        if (savedChat) setChatHistory(JSON.parse(savedChat));
+      } catch (err) {
+        console.error("Failed to initialize app data", err);
       }
-      
-      const savedScans = localStorage.getItem("kisan_scans");
-      if (savedScans) setScans(JSON.parse(savedScans));
-
-      const savedLogs = localStorage.getItem("kisan_logs");
-      if (savedLogs) setLogs(JSON.parse(savedLogs));
-
-      const savedListings = localStorage.getItem("kisan_listings");
-      if (savedListings) setListings(JSON.parse(savedListings));
-
-      // Theme toggle initialization matching prefers-color-scheme
-      const savedTheme = localStorage.getItem("kisan_theme");
-      if (savedTheme) {
-        setDarkMode(savedTheme === "dark");
-      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        setDarkMode(true);
-      }
-    } catch (e) {
-      console.warn("Storage reading error:", e);
-    }
+    };
+    initApp();
   }, []);
 
   // Update browser classes on dark mode toggle

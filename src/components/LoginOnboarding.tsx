@@ -8,6 +8,7 @@ import { Phone, CheckCircle, Shield, Compass, Sprout, Landmark, Globe } from "lu
 import { motion, AnimatePresence } from "motion/react";
 import { UserProfile } from "../types";
 import { TRANSLATIONS, LANGUAGES, LanguageCode } from "../translations";
+import { api } from "../utils/api";
 
 interface LoginOnboardingProps {
   onComplete: (profile: UserProfile) => void;
@@ -24,6 +25,8 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
   const [otpSent, setOtpSent] = useState(false);
   const [timer, setTimer] = useState(30);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState("");
   
   const otpInputRef = useRef<HTMLInputElement>(null);
 
@@ -52,7 +55,7 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
     return () => clearInterval(interval);
   }, [step, timer]);
 
-  const handlePhoneSubmit = (e: React.FormEvent) => {
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     const sanitized = phone.replace(/\D/g, "");
@@ -60,39 +63,85 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
       setError(selectedLanguage === "Hindi" ? "कृपया एक मान्य 10 अंकों का मोबाइल नंबर दर्ज करें!" : "Please enter a valid 10-digit mobile number!");
       return;
     }
-    // Simulate real OTP delivery
-    setOtpSent(true);
-    setTimer(30);
-    setStep("otp");
+    
+    try {
+      setLoading(true);
+      const res = await api.sendOtp(sanitized);
+      if (res.success) {
+        setOtpSent(true);
+        setTimer(30);
+        setStep("otp");
+      } else {
+        setError(res.message || "Failed to send OTP");
+      }
+    } catch (err: any) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleOtpVerify = (e: React.FormEvent) => {
+  const handleOtpVerify = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (otp !== "1234" && otp.length !== 4) {
-      setError(selectedLanguage === "Hindi" ? "गलत ओटीपी। परीक्षण के लिए '1234' का उपयोग करें।" : "Invalid verification code. Enter '1234' to test.");
+    if (otp.length !== 4) {
+      setError(selectedLanguage === "Hindi" ? "गलत ओटीपी।" : "Invalid verification code.");
       return;
     }
-    setStep("setup");
+    
+    try {
+      setLoading(true);
+      const res = await api.verifyOtp(phone, otp);
+      if (res.success) {
+        if (res.data.action === "login") {
+          localStorage.setItem("kisan_token", res.data.token);
+          onComplete({ ...res.data.user, language: selectedLanguage });
+        } else {
+          setStep("setup");
+        }
+      } else {
+        setError(res.message || "Invalid OTP");
+      }
+    } catch (err: any) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleCompleteSetup = () => {
+  const handleCompleteSetup = async () => {
+    if (!name.trim()) {
+      setError(selectedLanguage === "Hindi" ? "कृपया अपना नाम दर्ज करें!" : "Please enter your name!");
+      return;
+    }
     if (!district.trim()) {
       setError(selectedLanguage === "Hindi" ? "कृपया अपना जिला दर्ज करें!" : "Please enter your district name!");
       return;
     }
-    const profile: UserProfile = {
-      name: `Rajesh`, // Standard default name for farmer
-      phone: phone || "9876543210",
-      language: selectedLanguage,
-      cropType: crop,
-      farmSize: parseFloat(farmSize) || 2.5,
-      farmSizeUnit: farmUnit,
-      state: farmState,
-      district: district,
-      temperatureUnit: "C"
-    };
-    onComplete(profile);
+    
+    try {
+      setLoading(true);
+      const res = await api.registerOtp({
+        name,
+        phone,
+        cropType: crop,
+        farmSize: parseFloat(farmSize) || 2.5,
+        farmSizeUnit: farmUnit,
+        state: farmState,
+        district
+      });
+      
+      if (res.success) {
+        localStorage.setItem("kisan_token", res.data.token);
+        onComplete({ ...res.data.user, language: selectedLanguage });
+      } else {
+        setError(res.message || "Registration failed");
+      }
+    } catch (err: any) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -306,6 +355,21 @@ export default function LoginOnboarding({ onComplete, selectedLanguage, setLangu
               <p className="text-body-sm text-content-secondary mb-8 font-medium">Customize localized agroclimate parameters</p>
 
               <div className="space-y-6">
+                {/* Name Option */}
+                <div className="space-y-2">
+                  <label className="text-caption font-bold text-content-secondary uppercase tracking-wider block" htmlFor="name-input">
+                    Full Name
+                  </label>
+                  <input
+                    id="name-input"
+                    type="text"
+                    placeholder="e.g. Rajesh Kumar"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full h-14 bg-surface-elevated border border-border-subtle rounded-2xl px-4 text-body-md font-bold text-content-primary focus:outline-none focus:ring-2 focus:ring-signal-success/30 focus:border-signal-success transition-colors placeholder-content-muted"
+                  />
+                </div>
+
                 {/* Crop Option */}
                 <div className="space-y-3">
                   <label className="text-caption font-bold text-content-secondary uppercase tracking-wider select-none block">
