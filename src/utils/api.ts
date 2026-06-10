@@ -1,5 +1,5 @@
 // src/utils/api.ts
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://13.205.54.221";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://43.205.94.151";
 
 // Helper to get auth headers
 const getHeaders = () => {
