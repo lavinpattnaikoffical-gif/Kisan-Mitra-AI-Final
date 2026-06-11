@@ -77,7 +77,7 @@ export default function App() {
   const [metrics, setMetrics] = useState<MetricItem[]>([
     { id: "soil-moisture", label: "Soil Moisture", value: "42%", trend: "down", trendText: "-8% vs yesterday", status: "danger", sensorId: "GRID-S1", lastUpdated: "Today, 08:15 AM", sourceType: "IoT Sensor" },
     { id: "soil-temp", label: "Soil Temperature", value: "31°C", trend: "up", trendText: "+2°C vs noon", status: "neutral", sensorId: "GRID-S2", lastUpdated: "Today, 08:15 AM", sourceType: "IoT Sensor" },
-    { id: "crop-vitality", label: "Crop Vitality", value: "84%", trend: "stable", trendText: "Optimal index", status: "success", sensorId: "SATELLITE-V1", lastUpdated: "Yesterday, 04:30 PM", sourceType: "Satellite Estimate" }
+    { id: "humidity", label: "Ambient Humidity", value: "60%", trend: "stable", trendText: "Optimal range", status: "success", sensorId: "GRID-S3", lastUpdated: "Today, 08:15 AM", sourceType: "IoT Sensor" }
   ]);
   const [alerts, setAlerts] = useState<InboxAlert[]>(INITIAL_ALERTS);
   const [scans, setScans] = useState<ScanRecord[]>([]);
@@ -156,6 +156,10 @@ export default function App() {
             }
             if (m.id === "soil-temp" && iot.temperature !== undefined) {
               return { ...m, value: `${iot.temperature}°C`, lastUpdated: "Live", trendText: "Sync from ESP32" };
+            }
+            if (m.id === "humidity" && iot.humidity !== undefined) {
+              const status = iot.humidity > 80 ? "danger" : iot.humidity < 40 ? "warning" : "success";
+              return { ...m, value: `${iot.humidity}%`, status, lastUpdated: "Live", trendText: "Sync from ESP32" };
             }
             return m;
           }));
