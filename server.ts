@@ -207,6 +207,37 @@ app.get("/api/settings/ai-provider", (_req, res) => {
   });
 });
 
+// --- Auth Endpoints (Mock for Onboarding) ---
+app.post("/api/auth/send-otp", (req, res) => {
+  const { phone } = req.body;
+  if (!phone) return res.status(400).json({ success: false, message: "Phone number required" });
+  console.log(`📲 Mock OTP sent to +91 ${phone}`);
+  res.json({ success: true, message: "OTP sent successfully" });
+});
+
+app.post("/api/auth/verify-otp", (req, res) => {
+  const { phone, otp } = req.body;
+  if (otp === "1234") {
+    // For demo purposes, we always send new users to the 'setup' phase.
+    // If you want to simulate returning users, you could check a mock DB here.
+    res.json({ success: true, data: { action: "setup" } });
+  } else {
+    res.status(400).json({ success: false, message: "Invalid OTP. Use 1234." });
+  }
+});
+
+app.post("/api/auth/register-otp", (req, res) => {
+  const { name, phone, cropType, farmSize, farmSizeUnit, state, district } = req.body;
+  const mockUser = {
+    id: `u-${Date.now()}`,
+    name,
+    phone,
+    farmDetails: { cropType, farmSize, farmSizeUnit, state, district }
+  };
+  console.log(`✅ New User Registered: ${name} from ${district}, ${state}`);
+  res.json({ success: true, data: { token: "mock_jwt_token_123", user: mockUser } });
+});
+
 // API: IoT sensor data ingestion endpoint
 app.post("/api/iot-ingest", async (req, res) => {
   const { sensorId, source, data } = req.body;
