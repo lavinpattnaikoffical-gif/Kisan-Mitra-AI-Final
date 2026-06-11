@@ -3,6 +3,7 @@ import path from "path";
 import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
+import mongoose from "mongoose";
 
 dotenv.config();
 
@@ -22,8 +23,38 @@ let aiProviderConfig = {
   geminiModel: process.env.GEMINI_MODEL || "gemini-3.5-flash",
 };
 
-// IoT data store (in-memory for demo, persists per session)
-let iotSensorData: { id: string; source: string; data: any; timestamp: string }[] = [];
+// Mongoose Connection
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/kisanmitra";
+mongoose.connect(MONGODB_URI).then(() => {
+  console.log("🍃 Connected to MongoDB");
+}).catch((err) => {
+  console.error("MongoDB connection error:", err);
+});
+
+// Mongoose Schemas & Models
+const iotSensorSchema = new mongoose.Schema({
+  id: String,
+  source: String,
+  data: mongoose.Schema.Types.Mixed,
+  timestamp: { type: Date, default: Date.now }
+});
+const IotSensorData = mongoose.model("IotSensorData", iotSensorSchema);
+
+const farmControlSchema = new mongoose.Schema({
+  pump: { type: String, default: "OFF" },
+  lastUpdated: { type: Date, default: Date.now }
+});
+const FarmControl = mongoose.model("FarmControl", farmControlSchema);
+
+// Helper to get or create farm control document
+async function getFarmControl() {
+  let control = await FarmControl.findOne();
+  if (!control) {
+    control = new FarmControl({ pump: "OFF" });
+    await control.save();
+  }
+  return control;
+}
 
 // Helper to initialize Google Gen AI client lazily
 function getGeminiClient() {
@@ -177,23 +208,125 @@ app.get("/api/settings/ai-provider", (_req, res) => {
 });
 
 // API: IoT sensor data ingestion endpoint
-app.post("/api/iot-ingest", (req, res) => {
+app.post("/api/iot-ingest", async (req, res) => {
   const { sensorId, source, data } = req.body;
   if (!data) return res.status(400).json({ error: "Missing sensor data payload" });
-  const entry = {
-    id: `iot-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-    source: source || "USB/Serial",
-    data,
-    timestamp: new Date().toISOString(),
-  };
-  iotSensorData.push(entry);
-  if (iotSensorData.length > 200) iotSensorData = iotSensorData.slice(-200);
-  console.log(`📡 IoT data received from ${source || "USB"}: ${JSON.stringify(data).slice(0, 100)}`);
-  res.json({ success: true, entry });
+  
+  try {
+    const entry = new IotSensorData({
+      id: `iot-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      source: source || "ESP32",
+      data, // Expected to have { temperature, humidity, moisture, gps }
+      timestamp: new Date()
+    });
+    await entry.save();
+    
+    // Keep only the last 200 documents
+    const count = await IotSensorData.countDocuments();
+    if (count > 200) {
+      const oldestDocs = await IotSensorData.find().sort({ timestamp: 1 }).limit(count - 200);
+      const idsToDelete = oldestDocs.map(doc => doc._id);
+      await IotSensorData.deleteMany({ _id: { $in: idsToDelete } });
+    }
+
+    console.log(`📡 IoT data saved from ${source || "ESP32"}: ${JSON.stringify(data).slice(0, 100)}`);
+    res.json({ success: true, entry });
+  } catch (error) {
+    console.error("Failed to save IoT data:", error);
+    res.status(500).json({ error: "Failed to save IoT data" });
+  }
 });
 
-app.get("/api/iot-data", (_req, res) => {
-  res.json({ data: iotSensorData.slice(-50) });
+app.get("/api/iot-data", async (_req, res) => {
+  try {
+    const data = await IotSensorData.find().sort({ timestamp: 1 }).limit(50);
+    res.json({ data });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve IoT data" });
+  }
+});
+
+// API: Actuator Control Endpoints for ESP32
+app.post("/api/farm-control", async (req, res) => {
+  const { pump } = req.body;
+  try {
+    const control = await getFarmControl();
+    if (pump !== undefined) {
+      control.pump = pump;
+      control.lastUpdated = new Date();
+      await control.save();
+      console.log(`⚙️ Farm control state updated in DB: Pump is now ${pump}`);
+    }
+    res.json({ success: true, state: control });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update farm control state" });
+  }
+});
+
+app.get("/api/farm-status", async (_req, res) => {
+  try {
+    const control = await getFarmControl();
+    res.json({ pump: control.pump, lastUpdated: control.lastUpdated });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch farm control state" });
+  }
+});
+
+// API: AI Sensor Analysis
+app.post("/api/analyze-sensors", async (req, res) => {
+  const { language = "English" } = req.body;
+  const ai = getGeminiClient();
+
+  if (!ai) {
+    return res.json({
+      analysis: "Sensor analysis requires Gemini API key. Please configure it in settings.",
+      recommendation: "Without AI, please monitor moisture levels manually and ensure they do not drop below 30%.",
+      actionSuggested: "NONE",
+      isMock: true
+    });
+  }
+
+  try {
+    // Get the latest sensor reading
+    const latestData = await IotSensorData.findOne().sort({ timestamp: -1 });
+
+    if (!latestData) {
+      return res.status(400).json({ error: "No sensor data available for analysis" });
+    }
+
+    const prompt = `Analyze the following agricultural sensor data. Provide a brief analysis, a recommendation, and a suggested action (PUMP_ON, PUMP_OFF, or NONE). Respond in ${language}.
+    Return EXACTLY a JSON object with this schema:
+    - analysis (string): Brief analysis of the conditions.
+    - recommendation (string): Clear advice for the farmer.
+    - actionSuggested (string): Must be "PUMP_ON", "PUMP_OFF", or "NONE".
+
+    Sensor Data:
+    ${JSON.stringify(latestData.data, null, 2)}`;
+
+    const response = await ai.models.generateContent({
+      model: aiProviderConfig.geminiModel,
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          required: ["analysis", "recommendation", "actionSuggested"],
+          properties: {
+            analysis: { type: Type.STRING },
+            recommendation: { type: Type.STRING },
+            actionSuggested: { type: Type.STRING }
+          }
+        },
+        temperature: 0.2,
+      },
+    });
+
+    const parsedData = JSON.parse(response.text.trim());
+    res.json({ ...parsedData, isMock: false });
+  } catch (error: any) {
+    console.error("Sensor analysis failure:", error);
+    res.status(500).json({ error: "Failed to compile AI sensor analysis." });
+  }
 });
 
 // 2. Multilingual AI Assistant Chat API (supports Gemini / OpenRouter / Ollama)
