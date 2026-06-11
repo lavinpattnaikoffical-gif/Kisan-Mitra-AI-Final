@@ -44,5 +44,12 @@ export const api = {
       headers: getHeaders(),
     });
     return res.json();
+  },
+
+  getIotData: async () => {
+    const res = await fetch(`${BACKEND_URL}/api/iot-data`, {
+      headers: getHeaders(),
+    });
+    return res.json();
   }
 };

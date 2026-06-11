@@ -238,6 +238,21 @@ app.post("/api/auth/register-otp", (req, res) => {
   res.json({ success: true, data: { token: "mock_jwt_token_123", user: mockUser } });
 });
 
+// API: Get latest IoT sensor data
+app.get("/api/iot-data", async (req, res) => {
+  try {
+    // Fetch the single most recent reading
+    const latestData = await IotSensorData.findOne().sort({ timestamp: -1 });
+    if (!latestData) {
+      return res.json({ success: true, data: null });
+    }
+    res.json({ success: true, data: latestData });
+  } catch (error: any) {
+    console.error("Error fetching IoT data:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // API: IoT sensor data ingestion endpoint
 app.post("/api/iot-ingest", async (req, res) => {
   const { sensorId, source, data } = req.body;

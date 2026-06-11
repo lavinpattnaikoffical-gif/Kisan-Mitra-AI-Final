@@ -139,6 +139,37 @@ export default function App() {
     localStorage.setItem("kisan_theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
+  // Sync live IoT sensor data
+  useEffect(() => {
+    if (!profile) return;
+    
+    const fetchIotData = async () => {
+      try {
+        const res = await api.getIotData();
+        if (res.success && res.data && res.data.data) {
+          const iot = res.data.data;
+          
+          setMetrics((prev) => prev.map(m => {
+            if (m.id === "soil-moisture" && iot.soilMoisture !== undefined) {
+              const status = iot.soilMoisture > 70 ? "success" : iot.soilMoisture < 45 ? "danger" : "neutral";
+              return { ...m, value: `${iot.soilMoisture}%`, status, lastUpdated: "Live", trendText: "Sync from ESP32" };
+            }
+            if (m.id === "soil-temp" && iot.temperature !== undefined) {
+              return { ...m, value: `${iot.temperature}°C`, lastUpdated: "Live", trendText: "Sync from ESP32" };
+            }
+            return m;
+          }));
+        }
+      } catch (err) {
+        console.error("Failed to fetch IoT data", err);
+      }
+    };
+
+    fetchIotData(); // Initial fetch
+    const interval = setInterval(fetchIotData, 10000); // Poll every 10 seconds
+    return () => clearInterval(interval);
+  }, [profile]);
+
   // Geolocation: detect user's live location after login
   useEffect(() => {
     if (!profile) return;
