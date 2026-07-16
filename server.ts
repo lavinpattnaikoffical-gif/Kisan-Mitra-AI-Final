@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 import mongoose from "mongoose";
+import { initializeApp, cert } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 
@@ -32,6 +35,21 @@ mongoose.connect(MONGODB_URI).then(() => {
 });
 
 // Mongoose Schemas & Models
+const userSchema = new mongoose.Schema({
+  firebaseUid: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  phone: { type: String, required: true, unique: true },
+  farmDetails: {
+    cropType: String,
+    farmSize: Number,
+    farmSizeUnit: String,
+    state: String,
+    district: String
+  },
+  createdAt: { type: Date, default: Date.now }
+});
+const User = mongoose.model("User", userSchema);
+
 const iotSensorSchema = new mongoose.Schema({
   id: String,
   source: String,
@@ -72,6 +90,33 @@ function getGeminiClient() {
     },
   });
 }
+
+// Firebase Admin Init
+try {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_PATH) {
+    const serviceAccount = require(path.resolve(process.env.FIREBASE_SERVICE_ACCOUNT_PATH));
+    initializeApp({
+      credential: cert(serviceAccount)
+    });
+    console.log("🔥 Firebase Admin initialized with service account file.");
+  } else if (process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_PROJECT_ID) {
+     initializeApp({
+       credential: cert({
+         projectId: process.env.FIREBASE_PROJECT_ID,
+         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+         privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+       })
+     });
+     console.log("🔥 Firebase Admin initialized with env vars.");
+  } else {
+    initializeApp(); // relies on GOOGLE_APPLICATION_CREDENTIALS
+    console.log("🔥 Firebase Admin initialized with default credentials.");
+  }
+} catch (error) {
+  console.error("🔥 Firebase Admin initialization error:", error);
+}
+
+const JWT_SECRET = process.env.JWT_SECRET || "fallback_super_secret_key_change_me_in_prod";
 
 // Helper: Call OpenRouter API (OpenAI-compatible)
 async function callOpenRouter(messages: { role: string; content: string }[], model?: string): Promise<string> {
@@ -207,35 +252,85 @@ app.get("/api/settings/ai-provider", (_req, res) => {
   });
 });
 
-// --- Auth Endpoints (Mock for Onboarding) ---
-app.post("/api/auth/send-otp", (req, res) => {
-  const { phone } = req.body;
-  if (!phone) return res.status(400).json({ success: false, message: "Phone number required" });
-  console.log(`📲 Mock OTP sent to +91 ${phone}`);
-  res.json({ success: true, message: "OTP sent successfully" });
-});
+// --- Auth Endpoints (Firebase Integration) ---
 
-app.post("/api/auth/verify-otp", (req, res) => {
-  const { phone, otp } = req.body;
-  if (otp === "1234") {
-    // For demo purposes, we always send new users to the 'setup' phase.
-    // If you want to simulate returning users, you could check a mock DB here.
-    res.json({ success: true, data: { action: "setup" } });
-  } else {
-    res.status(400).json({ success: false, message: "Invalid OTP. Use 1234." });
+// Verify Firebase ID Token
+app.post("/api/auth/verify-firebase-token", async (req, res) => {
+  const { firebaseToken } = req.body;
+  if (!firebaseToken) {
+    return res.status(400).json({ success: false, message: "Missing firebaseToken" });
+  }
+
+  try {
+    // Verify token with Firebase Admin
+    const decodedToken = await getAuth().verifyIdToken(firebaseToken);
+    const uid = decodedToken.uid;
+    const phone = decodedToken.phone_number; // e.g. +91XXXXXXXXXX
+
+    // Check if user exists in MongoDB
+    let user = await User.findOne({ firebaseUid: uid });
+    
+    if (user) {
+      // Existing user: Issue JWT and return
+      const token = jwt.sign({ userId: user._id, phone: user.phone }, JWT_SECRET, { expiresIn: '7d' });
+      return res.json({ success: true, data: { action: "login", token, user } });
+    } else {
+      // New user: Requires setup/registration
+      return res.json({ success: true, data: { action: "setup", firebaseUid: uid, phone } });
+    }
+  } catch (error: any) {
+    console.error("Firebase token verification failed:", error);
+    res.status(401).json({ success: false, message: "Invalid or expired Firebase token." });
   }
 });
 
+// Register new user after successful Firebase token validation
+app.post("/api/auth/register", async (req, res) => {
+  const { firebaseUid, phone, name, cropType, farmSize, farmSizeUnit, state, district } = req.body;
+  
+  if (!firebaseUid || !name || !phone) {
+    return res.status(400).json({ success: false, message: "Missing required fields." });
+  }
+
+  try {
+    // Check if user already exists
+    let existingUser = await User.findOne({ firebaseUid });
+    if (existingUser) {
+       return res.status(400).json({ success: false, message: "User already registered." });
+    }
+
+    const newUser = new User({
+      firebaseUid,
+      name,
+      phone,
+      farmDetails: { cropType, farmSize, farmSizeUnit, state, district }
+    });
+    
+    await newUser.save();
+    
+    const token = jwt.sign({ userId: newUser._id, phone: newUser.phone }, JWT_SECRET, { expiresIn: '7d' });
+    console.log(`✅ New User Registered via Firebase: ${name} from ${district}, ${state}`);
+    
+    res.json({ success: true, data: { token, user: newUser } });
+  } catch (error: any) {
+    console.error("User registration failed:", error);
+    res.status(500).json({ success: false, message: "Registration failed." });
+  }
+});
+
+// Mock fallback for client code that hasn't updated to Firebase yet
+app.post("/api/auth/send-otp", (req, res) => {
+  // In a real Firebase flow, the frontend handles sending the OTP via Firebase SDK.
+  // This endpoint is left as a mock/stub so the frontend doesn't break if it still calls it.
+  res.json({ success: true, message: "Use Firebase JS SDK to send OTPs." });
+});
+
+app.post("/api/auth/verify-otp", (req, res) => {
+  res.status(400).json({ success: false, message: "Please use /api/auth/verify-firebase-token with a valid Firebase ID Token." });
+});
+
 app.post("/api/auth/register-otp", (req, res) => {
-  const { name, phone, cropType, farmSize, farmSizeUnit, state, district } = req.body;
-  const mockUser = {
-    id: `u-${Date.now()}`,
-    name,
-    phone,
-    farmDetails: { cropType, farmSize, farmSizeUnit, state, district }
-  };
-  console.log(`✅ New User Registered: ${name} from ${district}, ${state}`);
-  res.json({ success: true, data: { token: "mock_jwt_token_123", user: mockUser } });
+  res.status(400).json({ success: false, message: "Please use /api/auth/register with a verified Firebase UID." });
 });
 
 // API: Get latest IoT sensor data
