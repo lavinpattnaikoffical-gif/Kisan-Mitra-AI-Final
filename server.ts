@@ -226,6 +226,79 @@ app.get("/api/mandi-rates", (req, res) => {
   res.json({ state, rates });
 });
 
+// 1.5 Weather and Disaster Warning API
+app.get("/api/weather", async (req, res) => {
+  const { lat, lon } = req.query;
+
+  if (!lat || !lon) {
+    return res.status(400).json({ success: false, message: "Latitude (lat) and Longitude (lon) are required." });
+  }
+
+  const apiKey = process.env.OPENWEATHERMAP_API_KEY;
+
+  if (!apiKey) {
+    // Return a robust mock fallback for development
+    console.log("⚠️ OPENWEATHERMAP_API_KEY is missing. Returning mock weather data.");
+    return res.json({
+      success: true,
+      isMock: true,
+      current: {
+        temp: 28.5,
+        humidity: 78,
+        condition: "Rain",
+        description: "moderate rain"
+      },
+      forecast: [
+        { temp: 29, condition: "Rain" },
+        { temp: 31, condition: "Clouds" },
+        { temp: 32, condition: "Clear" }
+      ],
+      alerts: [
+        {
+          event: "Heavy Rainfall Warning",
+          description: "Expect continuous heavy rainfall over the next 24 hours. Ensure drainage channels in fields are clear to prevent waterlogging.",
+          severity: "High"
+        }
+      ]
+    });
+  }
+
+  try {
+    const response = await fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly&units=metric&appid=${apiKey}`);
+    
+    if (!response.ok) {
+      throw new Error(`OpenWeather API error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    const formattedData = {
+      success: true,
+      isMock: false,
+      current: {
+        temp: data.current.temp,
+        humidity: data.current.humidity,
+        condition: data.current.weather[0]?.main,
+        description: data.current.weather[0]?.description
+      },
+      forecast: data.daily?.slice(1, 4).map((day: any) => ({
+        temp: day.temp.day,
+        condition: day.weather[0]?.main
+      })) || [],
+      alerts: data.alerts?.map((alert: any) => ({
+        event: alert.event,
+        description: alert.description,
+        severity: "Warning" 
+      })) || []
+    };
+
+    res.json(formattedData);
+  } catch (error: any) {
+    console.error("Weather API Error:", error);
+    res.status(500).json({ success: false, message: "Failed to fetch weather data." });
+  }
+});
+
 // API: Save AI provider configuration at runtime
 app.post("/api/settings/ai-provider", (req, res) => {
   const { provider, geminiKey, openrouterKey, openrouterModel, ollamaUrl, ollamaModel, geminiModel } = req.body;
