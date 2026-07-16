@@ -391,19 +391,50 @@ app.post("/api/auth/register", async (req, res) => {
   }
 });
 
-// Mock fallback for client code that hasn't updated to Firebase yet
+// Mock OTP endpoints — functional for frontend until Firebase SDK is integrated
 app.post("/api/auth/send-otp", (req, res) => {
-  // In a real Firebase flow, the frontend handles sending the OTP via Firebase SDK.
-  // This endpoint is left as a mock/stub so the frontend doesn't break if it still calls it.
-  res.json({ success: true, message: "Use Firebase JS SDK to send OTPs." });
+  const { phone } = req.body;
+  if (!phone) return res.status(400).json({ success: false, message: "Phone number required" });
+  console.log(`📲 Mock OTP sent to +91 ${phone} (use 1234 to verify)`);
+  res.json({ success: true, message: "OTP sent successfully" });
 });
 
-app.post("/api/auth/verify-otp", (req, res) => {
-  res.status(400).json({ success: false, message: "Please use /api/auth/verify-firebase-token with a valid Firebase ID Token." });
+app.post("/api/auth/verify-otp", async (req, res) => {
+  const { phone, otp } = req.body;
+  if (otp === "1234") {
+    // Check if user already exists in MongoDB
+    const existingUser = await User.findOne({ phone: `+91${phone}` }).catch(() => null);
+    if (existingUser) {
+      const token = jwt.sign({ userId: existingUser._id, phone: existingUser.phone }, JWT_SECRET, { expiresIn: '7d' });
+      return res.json({ success: true, data: { action: "login", token, user: existingUser } });
+    }
+    return res.json({ success: true, data: { action: "setup" } });
+  } else {
+    return res.status(400).json({ success: false, message: "Invalid OTP. Use 1234 for testing." });
+  }
 });
 
-app.post("/api/auth/register-otp", (req, res) => {
-  res.status(400).json({ success: false, message: "Please use /api/auth/register with a verified Firebase UID." });
+app.post("/api/auth/register-otp", async (req, res) => {
+  const { name, phone, cropType, farmSize, farmSizeUnit, state, district } = req.body;
+  if (!name || !phone) return res.status(400).json({ success: false, message: "Name and phone required." });
+  try {
+    // Upsert user (create if not exists)
+    let user = await User.findOne({ phone: `+91${phone}` });
+    if (!user) {
+      user = new User({
+        firebaseUid: `mock-${phone}-${Date.now()}`,
+        name, phone: `+91${phone}`,
+        farmDetails: { cropType, farmSize, farmSizeUnit, state, district }
+      });
+      await user.save();
+    }
+    const token = jwt.sign({ userId: user._id, phone: user.phone }, JWT_SECRET, { expiresIn: '7d' });
+    console.log(`✅ User registered/logged in: ${name} from ${district}, ${state}`);
+    res.json({ success: true, data: { token, user } });
+  } catch (error: any) {
+    console.error("Register OTP error:", error);
+    res.status(500).json({ success: false, message: "Registration failed." });
+  }
 });
 
 // API: Get latest IoT sensor data
